@@ -60,6 +60,21 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 #login{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:20}
 #login .card{width:360px;max-width:92vw}
 #liErr{color:#ff9d9d;min-height:1.4em;font-size:.85rem}
+.mbar{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:12px 16px}
+.tb{position:sticky;top:0;z-index:5;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:14px}
+.tb button,.tb .cl{background:none;border:0;color:var(--ink);min-width:32px;height:32px;border-radius:6px;font:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:2px;padding:0 6px}
+.tb button:hover,.tb .cl:hover{background:var(--panel)}
+.tb select{width:auto;padding:4px 6px}
+.tb input[type=color]{width:24px;height:24px;padding:0;border:0;background:none;cursor:pointer}
+.sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.wrap{overflow:auto;background:#171028;border-radius:12px;padding:24px}
+#doc{width:794px;max-width:100%;min-height:1123px;margin:0 auto;padding:64px 72px;box-shadow:0 4px 24px #0008;outline:none}
+#doc,#stage{color:#000;background:#fff;font:12pt/1.8 "Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;word-break:break-word}
+#doc h2,#stage h2{font-size:20pt;margin:0 0 14px}#doc h3,#stage h3{font-size:15pt;margin:0 0 8px}
+#doc p,#doc div,#stage p,#stage div{margin:0}
+#doc ol,#doc ul,#stage ol,#stage ul{margin:0;padding-left:2em}
+#doc li,#stage li{margin:0 0 10px}
+@media(max-width:900px){#doc{padding:28px 20px;min-height:600px}.wrap{padding:10px}}
 @media(max-width:900px){
  .app{grid-template-columns:1fr}
  aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
@@ -105,27 +120,31 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 </section>
 
 <section id="make">
- <div class="cols c-make">
-  <div class="card">
-   <h2>新增題目到考卷</h2>
-   <label for="mQ">題目</label><textarea id="mQ" placeholder="選擇題可把選項寫在題目下面幾行"></textarea>
-   <label for="mA">答案（選填）</label><input id="mA">
-   <div class="bar"><button class="btn" id="mAdd">加入考卷</button><button class="btn ghost" id="toBank">從考古題總集挑題</button></div>
-  </div>
-  <div class="card">
-   <h2>目前考卷（<span id="mCount">0</span> 題）</h2>
-   <label for="pTitle">考卷標題</label><input id="pTitle" placeholder="例如：國文第二次段考">
-   <div id="mList" style="margin-top:6px"></div>
-   <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="withAns" style="width:auto"> 輸出時附上答案頁</label>
-   <div class="bar">
-    <button class="btn" id="mSave">存到出卷紀錄</button>
-    <button class="btn ghost" id="mUpd" style="display:none">更新原紀錄</button>
-    <button class="btn ghost" id="mPdf">輸出 PDF</button>
-    <button class="btn ghost" id="mDoc">輸出 Word 檔</button>
-    <button class="btn ghost" id="mClear">清空</button>
-   </div>
+ <div class="card mbar">
+  <span>目前 <b id="mCount">0</b> 題</span>
+  <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="withAns" style="width:auto"> 輸出時附上答案頁</label>
+  <div class="bar" style="margin:0 0 0 auto">
+   <button class="btn ghost" id="toBank">從考古題總集挑題</button>
+   <button class="btn" id="mSave">存到出卷紀錄</button>
+   <button class="btn ghost" id="mUpd" style="display:none">更新原紀錄</button>
+   <button class="btn ghost" id="mPdf">輸出 PDF</button>
+   <button class="btn ghost" id="mDoc">輸出 Word 檔</button>
+   <button class="btn ghost" id="mClear">清空</button>
   </div>
  </div>
+ <div class="tb" id="tb">
+  <button data-c="undo" title="復原">↶</button><button data-c="redo" title="重做">↷</button><span class="sep"></span>
+  <select id="tBlk" title="段落樣式"><option value="">段落</option><option value="&lt;p&gt;">內文</option><option value="&lt;h2&gt;">標題</option><option value="&lt;h3&gt;">小標題</option></select>
+  <select id="tFont" title="字型"><option value="">字型</option><option value="'Microsoft JhengHei','PingFang TC','Noto Sans TC',sans-serif">黑體</option><option value="PMingLiU,'Songti TC','Noto Serif TC',serif">明體</option><option value="DFKai-SB,BiauKai,KaiTi,serif">標楷體</option><option value="Arial,sans-serif">Arial</option><option value="'Times New Roman',serif">Times New Roman</option></select>
+  <select id="tSize" title="字級"><option value="">大小</option><option>10pt</option><option>12pt</option><option>14pt</option><option>16pt</option><option>18pt</option><option>24pt</option><option>32pt</option></select><span class="sep"></span>
+  <button data-c="bold" title="粗體"><b>B</b></button><button data-c="italic" title="斜體"><em>I</em></button><button data-c="underline" title="底線"><u>U</u></button><button data-c="strikeThrough" title="刪除線"><s>S</s></button><span class="sep"></span>
+  <label class="cl" title="文字顏色">A<input type="color" id="tCol" value="#c0392b"></label>
+  <label class="cl" title="螢光標示">底<input type="color" id="tBg" value="#ffee58"></label><span class="sep"></span>
+  <button data-c="justifyLeft" title="靠左">☰</button><button data-c="justifyCenter" title="置中">≡</button><button data-c="justifyRight" title="靠右">☷</button><span class="sep"></span>
+  <button data-c="insertOrderedList" title="編號清單">1.</button><button data-c="insertUnorderedList" title="項目符號">•</button><span class="sep"></span>
+  <button data-c="removeFormat" title="清除格式">Tx</button>
+ </div>
+ <div class="wrap"><div id="doc" contenteditable="true" spellcheck="false"></div></div>
 </section>
 
 <section id="rec">
@@ -142,8 +161,11 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
      <div><label for="bY">年份</label><input id="bY" type="number" placeholder="2025"></div>
      <div><label for="bC">科目</label><input id="bC" list="subs" placeholder="國文"></div>
     </div>
-    <label for="bT">題型</label><input id="bT" list="types" placeholder="選擇題">
-    <datalist id="subs"></datalist><datalist id="types"></datalist>
+    <div class="row">
+     <div><label for="bT">題型</label><input id="bT" list="types" placeholder="選擇題"></div>
+     <div><label for="bU">單元</label><input id="bU" list="units" placeholder="例如：第三課"></div>
+    </div>
+    <datalist id="subs"></datalist><datalist id="types"></datalist><datalist id="units"></datalist>
     <div id="oneBox">
      <label for="bQ">題目</label><textarea id="bQ"></textarea>
      <label for="bA">答案（選填）</label><input id="bA">
@@ -152,7 +174,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
     <div id="batBox" style="display:none">
      <label for="bB">貼上多題，每題之間空一行</label>
      <textarea id="bB" style="min-height:220px" placeholder="1. 下列何者正確？&#10;(A) 甲 (B) 乙 (C) 丙 (D) 丁&#10;答案：B&#10;&#10;2. 台灣最高的山是＿＿＿。&#10;答案：玉山"></textarea>
-     <div class="hint">答案寫在題目下方，以「答案：」開頭；題號會自動去掉。年份、科目、題型會套用到這批所有題目。<span id="bCnt"></span></div>
+     <div class="hint">答案寫在題目下方，以「答案：」開頭；題號會自動去掉。年份、科目、題型、單元會套用到這批所有題目。<span id="bCnt"></span></div>
      <div class="bar"><button class="btn" id="bBAdd">批量新增</button></div>
     </div>
    </div>
@@ -161,6 +183,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
     <label for="fY">年份</label><select id="fY"></select>
     <label for="fC">科目</label><select id="fC"></select>
     <label for="fT">題型</label><select id="fT"></select>
+    <label for="fU">單元</label><select id="fU"></select>
     <label for="fK">關鍵字</label><input id="fK" placeholder="搜尋題目內容">
    </div>
   </div>
@@ -297,74 +320,108 @@ $("evAdd").onclick=function(){
  $("evT").value="";act(putMany("events",[{id:uid(),date:sel,title:t}]));
 };
 
-/* ---------- 出題 ---------- */
-function renderDraft(){
- $("pTitle").value=L.title;$("mCount").textContent=L.draft.length;$("mUpd").style.display=L.pid?"":"none";
- $("mList").innerHTML=L.draft.length?L.draft.map(function(q,i){return '<div class="item"><div class="t"><b>'+(i+1)+".</b> "+esc(q.q)+(q.a?'<div class="ans">答案：'+esc(q.a)+"</div>":"")+'</div><div class="acts"><button class="btn ghost sm" data-up="'+i+'">↑</button><button class="btn ghost sm" data-dn="'+i+'">↓</button><button class="btn ghost sm" data-rm="'+i+'">移除</button></div></div>'}).join(""):'<div class="empty-msg">考卷還是空的，從左邊加入題目，或到考古題總集挑題。</div>';
- function mv(i,j){if(j<0||j>=L.draft.length)return;var t=L.draft[i];L.draft[i]=L.draft[j];L.draft[j]=t;saveL();renderDraft()}
- $("mList").querySelectorAll("[data-up]").forEach(function(b){b.onclick=function(){mv(+b.dataset.up,+b.dataset.up-1)}});
- $("mList").querySelectorAll("[data-dn]").forEach(function(b){b.onclick=function(){mv(+b.dataset.dn,+b.dataset.dn+1)}});
- $("mList").querySelectorAll("[data-rm]").forEach(function(b){b.onclick=function(){L.draft.splice(+b.dataset.rm,1);saveL();renderDraft();renderBank()}});
+/* ---------- 出題（文件編輯器） ---------- */
+var ed=$("doc"),docInit=false,savedRange=null;
+var DEF='<h2 style="text-align:center">考卷標題</h2>';
+function liHtml(q,a){return '<li data-ans="'+esc(a||"")+'">'+esc(q).replace(/\n/g,"<br>")+"</li>"}
+function fromItems(title,items){
+ var h='<h2 style="text-align:center">'+esc(title||"考卷標題")+"</h2>";
+ if(items&&items.length)h+="<ol>"+items.map(function(q){return liHtml(q.q,q.a)}).join("")+"</ol>";
+ return h;
 }
-$("pTitle").oninput=function(){L.title=this.value;saveL()};
-$("mAdd").onclick=function(){
- var q=$("mQ").value.trim();if(!q){$("mQ").focus();return}
- L.draft.push({q:q,a:$("mA").value.trim()});$("mQ").value="";$("mA").value="";saveL();renderDraft();
-};
-$("mClear").onclick=function(){if(confirm("確定清空目前的考卷？")){L.draft=[];L.title="";L.pid=null;saveL();renderDraft();renderBank()}};
+function nLi(){return ed.querySelectorAll("li").length}
+function sync(){L.html=ed.innerHTML;saveL();$("mCount").textContent=nLi();$("bD").textContent=nLi()}
+function docTitle(html){var d=document.createElement("div");d.innerHTML=html;var f=d.firstElementChild;return((f?f.textContent:d.textContent)||"").trim().slice(0,40)||"未命名考卷"}
+function renderDraft(){
+ if(!docInit){docInit=true;ed.innerHTML=L.html||fromItems(L.title,L.draft)}
+ $("mCount").textContent=nLi();$("bD").textContent=nLi();$("mUpd").style.display=L.pid?"":"none";
+}
+function addToDoc(q,a){
+ var last=ed.lastElementChild,ol;
+ if(last&&last.tagName==="OL")ol=last;
+ else{ol=document.createElement("ol");ol.setAttribute("start",nLi()+1);ed.appendChild(ol)}
+ ol.insertAdjacentHTML("beforeend",liHtml(q,a));sync();
+}
+document.addEventListener("selectionchange",function(){var g=getSelection();if(g.rangeCount&&ed.contains(g.anchorNode))savedRange=g.getRangeAt(0).cloneRange()});
+function back(){ed.focus();if(savedRange){var g=getSelection();g.removeAllRanges();g.addRange(savedRange)}}
+function cmd(c,v){back();document.execCommand("styleWithCSS",false,true);document.execCommand(c,false,v||null);sync()}
+function conv(cmdName,val,sel,prop,v){
+ back();document.execCommand("styleWithCSS",false,false);document.execCommand(cmdName,false,val);document.execCommand("styleWithCSS",false,true);
+ ed.querySelectorAll(sel).forEach(function(f){var sp=document.createElement("span");sp.style[prop]=v;while(f.firstChild)sp.appendChild(f.firstChild);f.replaceWith(sp)});sync();
+}
+document.querySelectorAll("#tb [data-c]").forEach(function(b){b.onmousedown=function(e){e.preventDefault();cmd(b.dataset.c)}});
+$("tBlk").onchange=function(){if(this.value)cmd("formatBlock",this.value);this.value=""};
+$("tFont").onchange=function(){if(this.value)conv("fontName","tmzf",'font[face="tmzf"]',"fontFamily",this.value);this.value=""};
+$("tSize").onchange=function(){if(this.value)conv("fontSize","7",'font[size="7"]',"fontSize",this.value);this.value=""};
+$("tCol").oninput=function(){cmd("foreColor",this.value)};
+$("tBg").oninput=function(){cmd("hiliteColor",this.value)};
+ed.addEventListener("input",sync);
+ed.addEventListener("paste",function(e){e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData("text/plain");document.execCommand("insertText",false,t)});
+$("mClear").onclick=function(){if(confirm("確定清空目前的考卷？")){ed.innerHTML=DEF;L.pid=null;sync();renderDraft()}};
 function savePaper(upd){
- if(!L.draft.length){toast("考卷是空的，先加入題目");return}
- var o={id:upd?L.pid:uid(),title:L.title||"未命名考卷",date:ds(new Date()),items:L.draft.slice()};
+ if(!ed.textContent.trim()){toast("考卷是空的");return}
+ var o={id:upd?L.pid:uid(),title:docTitle(ed.innerHTML),date:ds(new Date()),html:ed.innerHTML};
  if(upd){var old=S.papers.filter(function(p){return p.id===L.pid})[0];if(old){o.ts=old.ts;o.by=old.by}}
- act(putMany("papers",[o]).then(function(){L.pid=o.id;saveL();renderDraft();toast(upd?"已更新紀錄":"已存到出卷紀錄");go("rec")}));
+ act(putMany("papers",[o]).then(function(){L.pid=o.id;sync();renderDraft();toast(upd?"已更新紀錄":"已存到出卷紀錄");go("rec")}));
 }
 $("mSave").onclick=function(){savePaper(false)};$("mUpd").onclick=function(){savePaper(true)};
 
 /* ---------- 輸出 ---------- */
-function blocksOf(title,items,ans){
- var b=['<h1 style="text-align:center;font-size:26px;margin:0 0 8px">'+esc(title||"考卷")+"</h1>"];
- items.forEach(function(q,i){b.push('<div style="margin:0 0 6px"><b>'+(i+1)+".</b> "+esc(q.q).replace(/\n/g,"<br>")+"</div>")});
- if(ans){b.push("@@PAGE");b.push('<h1 style="text-align:center;font-size:26px;margin:0 0 8px">答案</h1>');items.forEach(function(q,i){b.push("<div>"+(i+1)+". "+esc(q.a||"（未填）")+"</div>")})}
- return b;
+var H1='<h1 style="text-align:center;font-size:26px;margin:0 0 8px">答案</h1>';
+function ansBlocks(html){
+ var d=document.createElement("div");d.innerHTML=html;var l=d.querySelectorAll("li");if(!l.length)return[];
+ var b=["@@PAGE",H1];Array.prototype.forEach.call(l,function(li,i){b.push("<div>"+(i+1)+". "+esc(li.getAttribute("data-ans")||"（未填）")+"</div>")});return b;
 }
-async function toPdf(title,items){
- if(!items.length){toast("考卷是空的");return}
+function blocksOf(html,ans){
+ var d=document.createElement("div");d.innerHTML=html;var b=[];
+ Array.prototype.forEach.call(d.childNodes,function(n){
+  if(n.nodeType===3){if(n.textContent.trim())b.push("<div>"+esc(n.textContent)+"</div>");return}
+  if(n.nodeType!==1)return;
+  if(n.tagName==="OL"||n.tagName==="UL"){
+   var st=+n.getAttribute("start")||1;
+   Array.prototype.forEach.call(n.children,function(li,i){var w=document.createElement(n.tagName);w.setAttribute("start",st+i);w.style.cssText=n.style.cssText;w.appendChild(li.cloneNode(true));b.push(w.outerHTML)});
+  }else b.push(n.outerHTML);
+ });
+ return ans?b.concat(ansBlocks(html)):b;
+}
+async function toPdf(title,html){
  if(!window.jspdf||!window.html2canvas){toast("PDF 工具沒載入成功，請確認網路後重新整理");return}
  toast("正在產生 PDF…");
- var stage=document.createElement("div");
- stage.style.cssText="position:fixed;left:-10000px;top:0;width:680px;background:#fff;color:#000;font:16px/1.8 'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif";
+ var stage=document.createElement("div");stage.id="stage";
+ stage.style.cssText="position:fixed;left:-10000px;top:0;width:680px";
  document.body.appendChild(stage);
  try{
-  var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}),y=15,W=180,bl=blocksOf(title,items,$("withAns").checked);
+  var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}),y=15,W=180,bl=blocksOf(html,$("withAns").checked);
   for(var i=0;i<bl.length;i++){
    if(bl[i]==="@@PAGE"){pdf.addPage();y=15;continue}
-   var d=document.createElement("div");d.style.padding="2px 0";d.innerHTML=bl[i];stage.appendChild(d);
+   var d=document.createElement("div");d.style.padding="1px 0";d.innerHTML=bl[i];stage.appendChild(d);
    var c=await window.html2canvas(d,{scale:2,backgroundColor:"#fff"});stage.removeChild(d);
    var w=W,h=c.height*W/c.width;if(h>265){w=W*265/h;h=265}
    if(y+h>282){pdf.addPage();y=15}
-   pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",15,y,w,h);y+=h+2;
+   pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",15,y,w,h);y+=h;
   }
   pdf.save((title||"考卷")+".pdf");toast("PDF 已下載");
  }catch(e){toast("PDF 產生失敗，請改用「輸出 Word 檔」")}
  stage.remove();
 }
-function toDoc(title,items){
- if(!items.length){toast("考卷是空的");return}
- var body=blocksOf(title,items,$("withAns").checked).map(function(b){return b==="@@PAGE"?'<br style="page-break-before:always">':b}).join("");
- var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(title)+"</title></head><body>"+body+"</body></html>";
- var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+html],{type:"application/msword"}));
+function toDoc(title,html){
+ var ans=$("withAns").checked?ansBlocks(html).map(function(b){return b==="@@PAGE"?'<br style="page-break-before:always">':b}).join(""):"";
+ var out='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(title)+'</title></head><body style="font-family:Microsoft JhengHei;font-size:12pt">'+html+ans+"</body></html>";
+ var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+out],{type:"application/msword"}));
  a.download=(title||"考卷")+".doc";document.body.appendChild(a);a.click();a.remove();
 }
-$("mPdf").onclick=function(){toPdf(L.title,L.draft)};
-$("mDoc").onclick=function(){toDoc(L.title,L.draft)};
+$("mPdf").onclick=function(){toPdf(docTitle(ed.innerHTML),ed.innerHTML)};
+$("mDoc").onclick=function(){toDoc(docTitle(ed.innerHTML),ed.innerHTML)};
 
 /* ---------- 出卷紀錄 ---------- */
+function paperHtml(p){return p.html||fromItems(p.title,p.items)}
+function cntOf(p){return p.html?(p.html.match(/<li/g)||[]).length:(p.items||[]).length}
 function renderRec(){
- $("recList").innerHTML=S.papers.length?S.papers.map(function(p){return '<div class="item"><div class="t"><b>'+esc(p.title)+'</b><div class="ans">'+esc(p.date)+"・"+p.items.length+" 題・建立者："+esc(p.by)+'</div></div><div class="acts"><button class="btn sm" data-ld="'+p.id+'">載入編輯</button><button class="btn ghost sm" data-pf="'+p.id+'">PDF</button><button class="btn ghost sm" data-dc="'+p.id+'">Word</button><button class="btn ghost sm" data-dl="'+p.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">還沒有紀錄。在「出題」頁按「存到出卷紀錄」就會出現在這裡。</div>';
+ $("recList").innerHTML=S.papers.length?S.papers.map(function(p){return '<div class="item"><div class="t"><b>'+esc(p.title)+'</b><div class="ans">'+esc(p.date)+"・"+cntOf(p)+" 題・建立者："+esc(p.by)+'</div></div><div class="acts"><button class="btn sm" data-ld="'+p.id+'">載入編輯</button><button class="btn ghost sm" data-pf="'+p.id+'">PDF</button><button class="btn ghost sm" data-dc="'+p.id+'">Word</button><button class="btn ghost sm" data-dl="'+p.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">還沒有紀錄。在「出題」頁按「存到出卷紀錄」就會出現在這裡。</div>';
  function find(id){return S.papers.filter(function(p){return p.id===id})[0]}
- $("recList").querySelectorAll("[data-ld]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.ld);L.title=p.title;L.draft=p.items.slice();L.pid=p.id;saveL();renderDraft();renderBank();go("make")}});
- $("recList").querySelectorAll("[data-pf]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.pf);toPdf(p.title,p.items)}});
- $("recList").querySelectorAll("[data-dc]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.dc);toDoc(p.title,p.items)}});
+ $("recList").querySelectorAll("[data-ld]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.ld);ed.innerHTML=paperHtml(p);L.pid=p.id;sync();renderDraft();go("make")}});
+ $("recList").querySelectorAll("[data-pf]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.pf);toPdf(p.title,paperHtml(p))}});
+ $("recList").querySelectorAll("[data-dc]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.dc);toDoc(p.title,paperHtml(p))}});
  $("recList").querySelectorAll("[data-dl]").forEach(function(b){b.onclick=function(){if(confirm("刪除這筆紀錄？所有人都會看不到。"))act(del("papers",b.dataset.dl))}});
 }
 
@@ -373,19 +430,21 @@ function uniq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i})}
 function opts(el,all,list){var v=el.value;el.innerHTML='<option value="">'+all+"</option>"+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+"</option>"}).join("");el.value=list.indexOf(v)>-1?v:""}
 function renderBank(){
  var ys=uniq(S.bank.map(function(b){return String(b.y)})).sort().reverse(),cs=uniq(S.bank.map(function(b){return b.c})).sort(),ts=uniq(TYPES.concat(S.bank.map(function(b){return b.t})));
- opts($("fY"),"全部年份",ys);opts($("fC"),"全部科目",cs);opts($("fT"),"全部題型",ts);
+ var us=uniq(S.bank.filter(function(b){return!$("fC").value||b.c===$("fC").value}).map(function(b){return b.u})).sort();
+ opts($("fY"),"全部年份",ys);opts($("fC"),"全部科目",cs);opts($("fT"),"全部題型",ts);opts($("fU"),"全部單元",us);
  $("subs").innerHTML=cs.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
  $("types").innerHTML=ts.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
+ $("units").innerHTML=uniq(S.bank.map(function(b){return b.u})).map(function(c){return '<option value="'+esc(c)+'">'}).join("");
  var k=$("fK").value.trim();
- var l=S.bank.filter(function(b){return(!$("fY").value||String(b.y)===$("fY").value)&&(!$("fC").value||b.c===$("fC").value)&&(!$("fT").value||b.t===$("fT").value)&&(!k||(b.q+" "+(b.a||"")).indexOf(k)>-1)});
- $("bN").textContent=l.length;$("bD").textContent=L.draft.length;
- $("bList").innerHTML=l.length?l.map(function(b){return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span><div>"+esc(b.q)+"</div>"+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">'+(S.bank.length?"沒有符合篩選的題目。":"題庫是空的，從左邊新增第一題。")+"</div>";
+ var l=S.bank.filter(function(b){return(!$("fY").value||String(b.y)===$("fY").value)&&(!$("fC").value||b.c===$("fC").value)&&(!$("fT").value||b.t===$("fT").value)&&(!$("fU").value||b.u===$("fU").value)&&(!k||(b.q+" "+(b.a||"")).indexOf(k)>-1)});
+ $("bN").textContent=l.length;$("bD").textContent=nLi();
+ $("bList").innerHTML=l.length?l.map(function(b){return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span>"+(b.u?'<span class="tag">'+esc(b.u)+"</span>":"")+"<div>"+esc(b.q)+"</div>"+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">'+(S.bank.length?"沒有符合篩選的題目。":"題庫是空的，從左邊新增第一題。")+"</div>";
  function find(id){return S.bank.filter(function(z){return z.id===id})[0]}
- $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);L.draft.push({q:b.q,a:b.a||""});saveL();renderDraft();$("bD").textContent=L.draft.length;toast("已加入考卷")}});
+ $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);addToDoc(b.q,b.a||"");toast("已加入考卷")}});
  $("bList").querySelectorAll("[data-del]").forEach(function(x){x.onclick=function(){if(confirm("刪除這題？所有人都會看不到。"))act(del("bank",x.dataset.del))}});
- $("bList").querySelectorAll("[data-ed]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.ed);editId=b.id;mode(false);$("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bQ").value=b.q;$("bA").value=b.a||"";$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0)}});
+ $("bList").querySelectorAll("[data-ed]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.ed);editId=b.id;mode(false);$("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bU").value=b.u||"";$("bQ").value=b.q;$("bA").value=b.a||"";$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0)}});
 }
-["fY","fC","fT"].forEach(function(i){$(i).onchange=renderBank});$("fK").oninput=renderBank;
+["fY","fC","fT","fU"].forEach(function(i){$(i).onchange=renderBank});$("fK").oninput=renderBank;
 function mode(batch){$("oneBox").style.display=batch?"none":"";$("batBox").style.display=batch?"":"none";$("tS").className="btn sm"+(batch?" ghost":"");$("tB").className="btn sm"+(batch?"":" ghost")}
 $("tS").onclick=function(){mode(false)};$("tB").onclick=function(){if(editId)resetEdit();mode(true)};
 function resetEdit(){editId=null;$("addH").textContent="新增考古題";$("bAdd").textContent="新增題目";$("bCancel").style.display="none";$("bQ").value="";$("bA").value=""}
@@ -393,7 +452,7 @@ $("bCancel").onclick=resetEdit;
 function meta(){
  var y=$("bY").value.trim(),c=$("bC").value.trim(),t=$("bT").value.trim();
  if(!y||!c||!t){toast("請先填年份、科目和題型");return null}
- return{y:y,c:c,t:t};
+ return{y:y,c:c,t:t,u:$("bU").value.trim()};
 }
 $("bAdd").onclick=function(){
  var m=meta();if(!m)return;var q=$("bQ").value.trim();if(!q){$("bQ").focus();return}
