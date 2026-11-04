@@ -1,163 +1,424 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>我的食譜｜小廚房</title>
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="小廚房">
-<meta name="theme-color" content="#52765b">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>題目在哪兒</title>
 <style>
-:root{--green:#52765b;--deep:#294c36;--sage:#e5ebdd;--bg:#f6f7f1;--muted:#718174;--line:#dce3d7;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--deep)}
-.app{max-width:560px;margin:auto;min-height:100vh;padding:16px 14px 34px}.header{display:flex;align-items:center;gap:11px;margin:6px 0 18px}.logo{width:44px;height:44px;border-radius:15px;background:var(--green);color:white;display:grid;place-items:center;font-size:23px}.brand{font-size:22px;font-weight:750}.sub{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:3px}.push{margin-left:auto}.btn{border:0;border-radius:12px;padding:11px 14px;background:var(--green);color:#fff;font-size:14px;cursor:pointer}.btn.light{background:#e3ebdc;color:var(--deep)}.btn.outline{background:#fff;color:var(--deep);border:1px solid var(--line)}.btn.danger{background:#fff0ed;color:#a34f46}.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:18px}.badge{position:absolute;top:2px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:8px;background:#d9604f;color:#fff;font-size:10px;line-height:16px;padding:0 4px;text-align:center}.nav button{position:relative;border:0;border-radius:12px;background:white;padding:10px 2px;color:var(--muted);font-size:11px;cursor:pointer}.nav button.active{background:var(--green);color:white}.nav .ico{display:block;font-size:19px;margin-bottom:4px}.hero{background:var(--sage);border-radius:22px;padding:20px;margin-bottom:20px}.eyebrow{font-size:11px;letter-spacing:1.5px;color:var(--green)}h1{font-size:25px;margin:8px 0}h2{font-size:19px;margin:0 0 13px}h3{font-size:16px;margin:0 0 5px}.muted{color:var(--muted);font-size:13px;line-height:1.6}.section{margin:20px 0}.card{background:white;border-radius:17px;padding:15px;margin:10px 0;box-shadow:0 2px 10px #273d2910}.row{display:flex;align-items:center;gap:9px}.between{justify-content:space-between}.grow{flex:1;min-width:0}.pill{display:inline-block;border-radius:20px;background:#edf2e8;color:#52765b;padding:5px 9px;font-size:11px;margin:2px}.input,textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--deep);font:inherit;margin:5px 0 10px}.input:focus,textarea:focus,select:focus{outline:2px solid #b8cbb4}.chips{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}.chip{border:1px solid var(--line);border-radius:22px;padding:8px 11px;background:white;color:var(--deep);font-size:12px;cursor:pointer}.chip.active{background:var(--green);color:white;border-color:var(--green)}.checkrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf0e9}.checkrow input{accent-color:var(--green);width:18px;height:18px}.done{text-decoration:line-through;color:#9ba69a}.bar{height:6px;border-radius:8px;background:#edf0e9;overflow:hidden;margin-top:9px}.bar span{display:block;height:100%;background:var(--green)}.empty{text-align:center;color:var(--muted);padding:25px 10px}.hidden{display:none!important}.small{font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions .btn{flex:1}.label{font-size:12px;color:#617363;font-weight:650}.ingredient-group{background:#f9faf6;border-radius:12px;padding:10px 12px;margin:8px 0}.ingredient-group summary{cursor:pointer;font-weight:650;font-size:14px}.ingredient-grid{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.ingredient-option{border:1px solid var(--line);background:white;border-radius:18px;padding:7px 10px;font-size:12px;cursor:pointer}.ingredient-option.selected{background:#dfe9d9;border-color:#9bb49a;color:#294c36}.toast{position:sticky;top:5px;background:#294c36;color:white;padding:10px 13px;border-radius:12px;z-index:5;margin-bottom:10px;font-size:13px}
-.ingredient-option.del-mode{background:#fff0ed;border-color:#e3b9b3;color:#a34f46}.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.cal-wd{text-align:center;font-size:11px;color:var(--muted);padding:3px 0}.cal-cell{border:0;background:#fff;border-radius:10px;min-height:58px;padding:4px 3px;text-align:left;cursor:pointer;color:var(--deep);overflow:hidden;font:inherit}.cal-cell .d{font-size:12px;font-weight:650}.cal-cell .nm{display:block;font-size:9px;line-height:1.25;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.cal-cell .more{font-size:9px;color:var(--muted)}.cal-cell.today .d{background:var(--green);color:#fff;border-radius:50%;display:inline-block;width:20px;height:20px;text-align:center;line-height:20px}.cal-cell.sel{outline:2px solid var(--green)}.add-row{display:flex;gap:7px;margin-top:10px}.add-row .input{margin:0;padding:8px 10px;font-size:13px}.add-row .btn{padding:8px 12px;white-space:nowrap}.ing-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}.ing-row .s{flex:1 1 100%;font-size:13px}.ing-row .input{margin:0;padding:10px;min-width:0}.ing-row .n{flex:3}.ing-row .q{flex:2}.ing-row button{border:0;background:#fff0ed;color:#a34f46;border-radius:10px;padding:10px 12px;cursor:pointer}.qty{color:var(--muted);font-size:13px;margin-left:8px}.ingredient-option.custom-del{padding:7px 9px;color:#a34f46;margin-left:-4px}
-@media(min-width:600px){body{padding:20px 0}.app{background:var(--bg);border-radius:24px}}
+:root{--bg:#241a3d;--side:#1a1230;--panel:#30244f;--panel2:#3a2d5f;--line:#4d3f77;--ink:#f6efe8;--mute:#b9aed4;--or:#ffb585;--or2:#ffd9bd;--dark:#241a3d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--side);padding:26px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;border-right:1px solid var(--line)}
+aside h1{margin:0 0 2px 8px;font-size:1.7rem;letter-spacing:.12em;color:var(--or2)}
+aside .sub{margin:0 0 18px 8px;color:var(--mute);font-size:.82rem}
+aside nav button{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;color:var(--mute);padding:11px 14px;font:inherit;font-weight:700;cursor:pointer;border-radius:0 8px 8px 0}
+aside nav button:hover{background:var(--panel)}
+aside nav button.on{color:var(--or);border-color:var(--or);background:var(--panel)}
+#who{margin-top:auto;font-size:.82rem;color:var(--mute);padding:10px 8px;border-top:1px solid var(--line)}
+main{padding:28px 36px 48px;min-width:0}
+section{display:none}section.on{display:block}
+h2{font-size:1.1rem;margin:0 0 12px;color:var(--or2)}
+h3{margin:0 0 8px;font-size:1.5rem;color:var(--or2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
+.cols{display:grid;gap:20px;align-items:start}
+.c-home{grid-template-columns:minmax(0,1.9fr) minmax(280px,1fr)}
+.c-make{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+.c-bank{grid-template-columns:340px minmax(0,1fr)}
+label{display:block;font-size:.82rem;color:var(--mute);margin:9px 0 3px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--or);outline-offset:1px}
+.btn{background:var(--or);color:var(--dark);border:0;border-radius:8px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--or2)}
+.btn.ghost{background:none;color:var(--or);border:1px solid var(--or)}
+.btn.ghost:hover{background:var(--panel2)}
+.btn.sm{padding:3px 10px;font-size:.8rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}.row>*{flex:1;min-width:110px}.row .btn{flex:none}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tabs{display:flex;gap:6px;margin-bottom:6px}.tabs .btn{flex:1}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-h b{font-size:1.3rem;color:var(--or2)}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.dow{text-align:center;color:var(--mute);font-size:.82rem}
+.day{min-height:92px;background:var(--panel2);border:1px solid transparent;border-radius:8px;color:var(--ink);font:inherit;cursor:pointer;padding:5px 6px;text-align:left;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.day:hover{border-color:var(--or)}
+.day.empty{background:none;cursor:default;border:0}
+.day.today .n{color:var(--or);font-weight:800}
+.day.sel{border-color:var(--or2);background:#4a3a78}
+.day .ev{font-size:.72rem;background:var(--or);color:var(--dark);border-radius:4px;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day .more{font-size:.7rem;color:var(--mute)}
+.item{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.item .t{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word}
+.item .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{display:inline-block;font-size:.74rem;border:1px solid var(--or);color:var(--or);border-radius:20px;padding:0 9px;margin:0 6px 3px 0}
+.ans{color:var(--mute);font-size:.86rem}
+.empty-msg{color:var(--mute);padding:6px 0}
+.hint{color:var(--mute);font-size:.8rem;margin-top:4px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--or);color:var(--dark);padding:9px 20px;border-radius:24px;font-weight:700;display:none;z-index:30}
+#login{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:20}
+#login .card{width:360px;max-width:92vw}
+#liErr{color:#ff9d9d;min-height:1.4em;font-size:.85rem}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
+ aside .sub{display:none}aside h1{margin:0 12px 0 0;font-size:1.3rem}
+ aside nav{display:flex;overflow-x:auto}aside nav button{border-left:0;border-bottom:3px solid transparent;border-radius:0}
+ aside nav button.on{border-bottom-color:var(--or)}
+ #who{margin:0 0 0 auto;border:0;padding:0}
+ main{padding:18px 14px 40px}
+ .c-home,.c-make,.c-bank{grid-template-columns:1fr}
+ .day{min-height:54px}.day .ev{display:none}
+}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header"><div class="logo">♧</div><div><div class="brand">我的食譜</div><div class="sub">MY LITTLE KITCHEN</div></div><button class="btn light push" onclick="go('settings')" aria-label="設定" style="font-size:22px;padding:7px 13px;line-height:1">⚙</button></div>
-  <div id="toast" class="toast hidden"></div>
-  <nav class="nav">
-    <button class="active" data-tab="home" onclick="go('home')"><span class="ico">⌂</span>首頁</button>
-    <button data-tab="pantry" onclick="go('pantry')"><span class="ico">🥬</span>現有食材</button>
-    <button data-tab="cook" onclick="go('cook')"><span class="ico">🍳</span>立刻煮</button>
-    <button data-tab="recipes" onclick="go('recipes')"><span class="ico">▤</span>食譜庫</button>
-    <button data-tab="shopping" onclick="go('shopping')"><span class="ico">☑</span>購物清單<span id="shopBadge" class="badge hidden"></span></button>
-  </nav>
-  <main id="view"></main>
+<aside>
+ <h1>題目在哪兒</h1>
+ <p class="sub">考古題整理與出題參考</p>
+ <nav id="nav">
+  <button data-p="home" class="on">首頁</button>
+  <button data-p="make">出題</button>
+  <button data-p="rec">出卷紀錄</button>
+  <button data-p="bank">考古題總集</button>
+ </nav>
+ <div id="who"><div id="whoT"></div><button class="btn ghost sm" id="setBtn" style="margin-top:8px">⚙ 設定</button></div>
+</aside>
+<main>
+
+<section id="home" class="on">
+ <div class="cols c-home">
+  <div class="card">
+   <div class="cal-h"><button class="btn ghost sm" id="prev">上個月</button><b id="mlabel"></b><button class="btn ghost sm" id="next">下個月</button></div>
+   <div class="grid" id="dows"></div>
+   <div class="grid" id="cal" style="margin-top:5px"></div>
+  </div>
+  <div class="card">
+   <h2 id="dlabel">選擇日期</h2>
+   <label for="evT">考卷名稱</label><input id="evT" placeholder="例如：國文第二次段考">
+   <div class="bar"><button class="btn" id="evAdd">新增考試</button></div>
+   <div id="evList" style="margin-top:8px"></div>
+  </div>
+ </div>
+</section>
+
+<section id="make">
+ <div class="cols c-make">
+  <div class="card">
+   <h2>新增題目到考卷</h2>
+   <label for="mQ">題目</label><textarea id="mQ" placeholder="選擇題可把選項寫在題目下面幾行"></textarea>
+   <label for="mA">答案（選填）</label><input id="mA">
+   <div class="bar"><button class="btn" id="mAdd">加入考卷</button><button class="btn ghost" id="toBank">從考古題總集挑題</button></div>
+  </div>
+  <div class="card">
+   <h2>目前考卷（<span id="mCount">0</span> 題）</h2>
+   <label for="pTitle">考卷標題</label><input id="pTitle" placeholder="例如：國文第二次段考">
+   <div id="mList" style="margin-top:6px"></div>
+   <label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="withAns" style="width:auto"> 輸出時附上答案頁</label>
+   <div class="bar">
+    <button class="btn" id="mSave">存到出卷紀錄</button>
+    <button class="btn ghost" id="mUpd" style="display:none">更新原紀錄</button>
+    <button class="btn ghost" id="mPdf">輸出 PDF</button>
+    <button class="btn ghost" id="mDoc">輸出 Word 檔</button>
+    <button class="btn ghost" id="mClear">清空</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="rec">
+ <div class="card"><h2>出卷紀錄（所有人共用）</h2><div id="recList"></div></div>
+</section>
+
+<section id="bank">
+ <div class="cols c-bank">
+  <div>
+   <div class="card">
+    <h2 id="addH">新增考古題</h2>
+    <div class="tabs"><button class="btn sm" id="tS">單題</button><button class="btn ghost sm" id="tB">批量</button></div>
+    <div class="row">
+     <div><label for="bY">年份</label><input id="bY" type="number" placeholder="2025"></div>
+     <div><label for="bC">科目</label><input id="bC" list="subs" placeholder="國文"></div>
+    </div>
+    <label for="bT">題型</label><input id="bT" list="types" placeholder="選擇題">
+    <datalist id="subs"></datalist><datalist id="types"></datalist>
+    <div id="oneBox">
+     <label for="bQ">題目</label><textarea id="bQ"></textarea>
+     <label for="bA">答案（選填）</label><input id="bA">
+     <div class="bar"><button class="btn" id="bAdd">新增題目</button><button class="btn ghost" id="bCancel" style="display:none">取消編輯</button></div>
+    </div>
+    <div id="batBox" style="display:none">
+     <label for="bB">貼上多題，每題之間空一行</label>
+     <textarea id="bB" style="min-height:220px" placeholder="1. 下列何者正確？&#10;(A) 甲 (B) 乙 (C) 丙 (D) 丁&#10;答案：B&#10;&#10;2. 台灣最高的山是＿＿＿。&#10;答案：玉山"></textarea>
+     <div class="hint">答案寫在題目下方，以「答案：」開頭；題號會自動去掉。年份、科目、題型會套用到這批所有題目。<span id="bCnt"></span></div>
+     <div class="bar"><button class="btn" id="bBAdd">批量新增</button></div>
+    </div>
+   </div>
+   <div class="card">
+    <h2>篩選</h2>
+    <label for="fY">年份</label><select id="fY"></select>
+    <label for="fC">科目</label><select id="fC"></select>
+    <label for="fT">題型</label><select id="fT"></select>
+    <label for="fK">關鍵字</label><input id="fK" placeholder="搜尋題目內容">
+   </div>
+  </div>
+  <div class="card"><h2>題目清單（<span id="bN">0</span> 題・考卷已有 <span id="bD">0</span> 題）</h2><div id="bList"></div></div>
+ </div>
+</section>
+
+</main>
 </div>
+
+<div id="login"><div class="card">
+ <h3>設定</h3>
+ <div id="stT" class="ans" style="margin-bottom:12px"></div>
+ <div id="liErr"></div>
+ <div class="bar" style="margin-top:4px"><button class="btn" id="liBtn" style="width:100%;padding:11px">使用 Google 帳號登入</button></div>
+ <div class="bar"><button class="btn ghost" id="outBtn" style="width:100%">登出</button></div>
+ <div class="bar"><button class="btn ghost" id="setClose" style="width:100%">關閉</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-const KEY='myLittleKitchen_v2';
-const groups={
- '肉類':['豬肉','牛肉','雞肉','鴨肉','魚肉','蝦子','蛤蜊','培根','火腿','絞肉','雞胸肉'],
- '蔬菜類':['番茄','高麗菜','青江菜','菠菜','花椰菜','洋蔥','紅蘿蔔','馬鈴薯','香菇','金針菇','杏鮑菇','蔥','蒜頭','薑','豆腐'],
- '蛋奶類':['雞蛋','牛奶','起司','鮮奶油','優格'],
- '主食類':['白米','糙米','麵條','義大利麵','吐司','燕麥','地瓜'],
- '調味料':['鹽','糖','醬油','蠔油','米酒','醋','香油','食用油','胡椒','辣椒醬','味噌','咖哩粉'],
- '其他':['水','海苔','芝麻','玉米粒','豆類']
-};
-const seed=[
-{id:1,name:'番茄炒蛋',category:'蛋料理',time:10,ingredients:['番茄','雞蛋','鹽','糖'],steps:['番茄洗淨切塊，雞蛋打散。','先將雞蛋炒至半熟後盛起。','炒番茄至軟，加入雞蛋及調味料拌炒。'],favorite:true},
-{id:2,name:'香菇炊飯',category:'飯料理',time:35,ingredients:['白米','香菇','醬油','水'],steps:['白米洗淨，香菇切片。','將米、香菇、醬油及水放入電鍋內鍋。','按下煮飯鍵，完成後燜 10 分鐘。'],favorite:false},
-{id:3,name:'微波爐蒸蛋',category:'蛋料理',time:8,ingredients:['雞蛋','溫水','鹽','醬油'],steps:['雞蛋打散，加入溫水和調味料。','蛋液過篩後倒入可微波容器。','蓋上留縫的蓋子，以中低火分段加熱至凝固。'],favorite:true},
-{id:4,name:'蒜香炒菇',category:'蔬菜料理',time:12,ingredients:['香菇','蒜頭','醬油','食用油'],steps:['香菇切片，蒜頭切末。','熱鍋加油，炒香蒜末。','加入香菇炒熟，以少許醬油調味。'],favorite:false},
-{id:5,name:'醬油拌麵',category:'麵食',time:10,ingredients:['麵條','醬油','香油','蔥'],steps:['將麵條煮熟，瀝乾水分。','加入醬油和香油拌勻。','撒上蔥花即可。'],favorite:false}
-];
-let state=load(),tab='home',query='',cat='全部',editId=null,selectedId=null,selectedPantry=new Set(state.pantry||['雞蛋','番茄','香菇']);
-const baseCats=['蛋料理','飯料理','麵食','蔬菜料理','肉料理'];
-function catList(){let extra=[...new Set(state.recipes.map(r=>r.category))].filter(c=>c&&!baseCats.includes(c)&&c!=='其他');return ['全部',...baseCats,...extra,'其他']}
-function ingText(i){return esc(i.name)+(i.qty?' '+esc(i.qty):'')}
-function normIng(a){return (a||[]).map(x=>typeof x==='string'?{name:x,qty:'',subs:[]}:{name:String(x.name||''),qty:String(x.qty||''),subs:Array.isArray(x.subs)?x.subs.map(String).filter(Boolean):[]}).filter(x=>x.name)}
-function norm(s){s.recipes.forEach(r=>{r.ingredients=normIng(r.ingredients);r.steps=r.steps||[]});s.shopping=s.shopping||[];s.pantry=s.pantry||[];s.custom=s.custom||{};s.plans=s.plans&&typeof s.plans==='object'?s.plans:{};if(!s.lists||typeof s.lists!=='object'){s.lists={};for(const g in groups)s.lists[g]=[...new Set(groups[g].concat(s.custom[g]||[]))]}for(const g in s.lists)if(!Array.isArray(s.lists[g]))s.lists[g]=[];return s}
-let pantryEdit=false;
-let calM=(()=>{let d=new Date();return new Date(d.getFullYear(),d.getMonth(),1)})(),calSel=null;
-function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function planName(p){if(p.t)return p.t;let r=recipe(p.r);return r?r.name:null}
-function planList(k){return (state.plans[k]||[]).map((p,i)=>({p,i,n:planName(p)})).filter(x=>x.n)}
-function calHTML(){let y=calM.getFullYear(),m=calM.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),today=dk(new Date());
-let cells=['日','一','二','三','四','五','六'].map(w=>`<div class="cal-wd">${w}</div>`).join('');
-for(let i=0;i<first;i++)cells+='<div></div>';
-for(let d=1;d<=days;d++){let k=dk(new Date(y,m,d)),L=planList(k);cells+=`<button class="cal-cell ${k===today?'today':''} ${k===calSel?'sel':''}" onclick="calPick('${k}')"><span class="d">${d}</span>${L.slice(0,2).map(x=>`<span class="nm">${esc(x.n)}</span>`).join('')}${L.length>2?`<span class="more">+${L.length-2}</span>`:''}</button>`}
-let panel='';if(calSel){let L=planList(calSel),pt=calSel.split('-');panel=`<div class="card"><h3>${+pt[1]}月${+pt[2]}日 要煮什麼？</h3>${L.map(x=>`<div class="checkrow"><span class="grow">${esc(x.n)}</span>${x.p.r?`<button class="btn light" onclick="showDetail(${x.p.r})">做法</button>`:''}<button class="btn danger" onclick="delPlan(${x.i})">移除</button></div>`).join('')||'<p class="muted">這天還沒有安排。</p>'}<label class="label">從食譜庫選擇</label><div class="row"><select class="input" id="planSel" style="margin-bottom:10px">${catList().slice(1).map(c=>{let rs=state.recipes.filter(r=>r.category===c);return rs.length?`<optgroup label="${esc(c)}">${rs.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</optgroup>`:''}).join('')}</select><button class="btn" onclick="addPlanRecipe()" style="margin-bottom:5px">加入</button></div><label class="label">或自己輸入菜名</label><form class="row" onsubmit="event.preventDefault();addPlanText()"><input class="input" id="planText" placeholder="例如：外食、媽媽煮的湯" style="margin-bottom:10px"><button class="btn" type="submit" style="margin-bottom:5px">加入</button></form>${L.some(x=>x.p.r)?'<button class="btn outline" style="width:100%" onclick="planToShopping()">把這天缺的食材加入購物清單</button>':''}</div>`}
-return `<section class="section"><div class="cal-head"><button class="btn outline" onclick="calNav(-1)">‹</button><h2 style="margin:0">${y} 年 ${m+1} 月</h2><button class="btn outline" onclick="calNav(1)">›</button></div><div class="cal-grid">${cells}</div>${panel}</section>`}
-function calNav(d){calM=new Date(calM.getFullYear(),calM.getMonth()+d,1);calSel=null;render()}
-function calPick(k){calSel=calSel===k?null:k;render()}
-function addPlan(e){(state.plans[calSel]=state.plans[calSel]||[]).push(e);save();render()}
-function addPlanRecipe(){let v=Number(document.getElementById('planSel').value);if(!v)return;addPlan({r:v})}
-function addPlanText(){let t=document.getElementById('planText').value.trim();if(!t)return;addPlan({t})}
-function delPlan(i){state.plans[calSel].splice(i,1);if(!state.plans[calSel].length)delete state.plans[calSel];save();render()}
-function planToShopping(){let have=state.shopping.map(x=>x.name),c=0;(state.plans[calSel]||[]).forEach(p=>{let r=p.r&&recipe(p.r);if(!r)return;r.ingredients.filter(i=>!ingHave(i)&&!have.includes(i.name)).forEach(i=>{state.shopping.push({id:nextShopId(),name:i.name,qty:i.qty,checked:false});have.push(i.name);c++})});save();toast(c?'已加入 '+c+' 項缺少的食材':'食材都齊全了')}
-function ingHave(i){return selectedPantry.has(i.name)||(i.subs||[]).some(s=>selectedPantry.has(s))}
-function usedSub(i){return selectedPantry.has(i.name)?null:(i.subs||[]).find(s=>selectedPantry.has(s))}
-function haveCount(r){return r.ingredients.filter(i=>ingHave(i)).length}
-function ingB(i){let s=usedSub(i);return ingHave(i)?'<b>'+ingText(i)+(s?' <span class="qty">→'+esc(s)+'替代</span>':'')+'</b>':ingText(i)}
-function applyRemote(o){if(!o||!Array.isArray(o.recipes))return;if((o.updatedAt||0)<=(state.updatedAt||0))return;if(document.getElementById('rName')){setTimeout(()=>applyRemote(o),3000);return}state=norm(o);selectedPantry=new Set(state.pantry);try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}render();toast('已同步最新資料')}
-function getLocal(){return state}
-function refreshSettings(){if(tab==='settings'&&selectedId===null)render()}
-function cloudCard(){let u=window.cloudUser;if(window.cloudError)return `<div class="card"><h3>雲端同步</h3><p class="muted">雲端功能無法載入，請確認網路連線後重新整理。資料仍會保存在本機。</p></div>`;
-if(!window.cloudReady)return `<div class="card"><h3>雲端同步</h3><p class="muted">雲端功能載入中…</p></div>`;
-if(u)return `<div class="card"><h3>雲端同步</h3><p class="muted">已登入：${esc(u.email)}<br>${esc(window.cloudStatus||'')}。在其他裝置用同一個帳號登入，資料就會自動同步。</p><div class="actions"><button class="btn outline" onclick="cloudSignOut()">登出</button></div></div>`;
-return `<div class="card"><h3>雲端同步</h3><p class="muted">登入後，手機與平板的資料會自動同步。</p><div class="actions"><button class="btn" onclick="cloudGoogle()">使用 Google 登入</button></div><p class="muted" style="margin-top:14px">或使用電子郵件（第一次請先「註冊」，其他裝置用同一組帳號「登入」）：</p><input class="input" id="cEmail" type="email" placeholder="電子郵件" autocomplete="email"><input class="input" id="cPass" type="password" placeholder="密碼（至少 6 碼）" autocomplete="current-password"><div class="actions"><button class="btn" onclick="cloudSignIn()">登入</button><button class="btn outline" onclick="cloudSignUp()">註冊</button></div></div>`}
-function cookable(){return state.recipes.filter(r=>r.ingredients.length&&r.ingredients.every(i=>ingHave(i))).sort((a,b)=>a.time-b.time)}
-function load(){try{let s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.recipes))return norm(s)}catch(e){}return norm({custom:{},recipes:JSON.parse(JSON.stringify(seed)),shopping:[{id:1,name:'雞蛋',checked:false},{id:2,name:'番茄',checked:false}],pantry:['雞蛋','番茄','香菇']})}
-function save(){updBadge();state.pantry=[...selectedPantry];state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('瀏覽器無法保存資料，請檢查儲存空間或隱私設定。')}if(window.cloudPush)window.cloudPush()}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function toast(s){let el=document.getElementById('toast');el.textContent=s;el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),2600)}
-function go(t){tab=t;selectedId=null;render();document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t))}
-function recipe(id){return state.recipes.find(r=>r.id===id)}
-function recipeCard(r){return `<article class="card"><div class="row between"><div class="grow"><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · 約 ${r.time} 分鐘</div></div><button class="btn light" onclick="toggleFav(${r.id})">${r.favorite?'♥':'♡'}</button></div><div class="muted" style="margin-top:8px">食材（已有 ${haveCount(r)}/${r.ingredients.length}）：${r.ingredients.map(ingB).join('、')}</div><div class="actions"><button class="btn outline" onclick="showDetail(${r.id})">查看做法</button><button class="btn outline" onclick="openRecipeForm(${r.id})">編輯</button></div></article>`}
-function updBadge(){let el=document.getElementById('shopBadge');if(!el||!state||!state.shopping)return;let n=state.shopping.filter(x=>!x.checked).length;el.textContent=n>99?'99+':n;el.classList.toggle('hidden',!n)}
-function render(){updBadge();const v=document.getElementById('view');if(selectedId!==null){v.innerHTML=detailHTML(recipe(selectedId));return}
-if(tab==='home'){v.innerHTML=`${calHTML()}<section class="section"><h2>我的收藏</h2>${state.recipes.filter(r=>r.favorite).map(recipeCard).join('')||'<div class="empty">還沒有收藏的食譜</div>'}</section><p class="muted">資料會自動保存於目前這個瀏覽器。</p>`}
-else if(tab==='pantry'){v.innerHTML=`<h2>現有食材</h2><p class="muted">按類別選取你目前有的食材。已選 ${selectedPantry.size} 項；推薦會依符合食材數排序。</p><div class="actions"><button class="btn ${pantryEdit?'danger':'outline'}" onclick="pantryEdit=!pantryEdit;render()">${pantryEdit?'完成編輯':'✎ 編輯食材'}</button><button class="btn" onclick="savePantry()">保存食材清單</button></div>${pantryEdit?'<p class="muted">編輯模式：點選食材即可刪除（內建與自訂皆可）。 <button class="btn outline" style="padding:6px 10px;font-size:12px" onclick="restoreDefaults()">還原內建食材</button></p>':''}${pantryEdit?`<form class="add-row" style="margin:14px 0" onsubmit="event.preventDefault();addCategory()"><input class="input" id="newCat" placeholder="新增食材分類，例如：乾貨、冷凍"><button class="btn light" type="submit">＋ 分類</button></form>`:''}${Object.keys(state.lists).map((g,gi)=>{let items=state.lists[g];return `<details class="ingredient-group" open><summary>${g} <span class="muted">(${items.filter(x=>selectedPantry.has(x)).length})</span>${pantryEdit?`<span style="float:right"><button class="btn outline" style="padding:3px 9px;font-size:11px" onclick="event.preventDefault();renameCat(${gi})">改名</button> <button class="btn danger" style="padding:3px 9px;font-size:11px" onclick="event.preventDefault();delCat(${gi})">刪分類</button></span>`:''}</summary><div class="ingredient-grid">${items.map(x=>`<button class="ingredient-option ${pantryEdit?'del-mode':selectedPantry.has(x)?'selected':''}" onclick="${pantryEdit?`delItem(${gi},${esc(JSON.stringify(x))})`:`togglePantry(${esc(JSON.stringify(x))})`}">${pantryEdit?'× ':selectedPantry.has(x)?'✓ ':''}${esc(x)}</button>`).join('')}</div>${pantryEdit?`<form class="add-row" onsubmit="event.preventDefault();addCustomPantry(${gi})"><input class="input" id="cu${gi}" placeholder="自訂${g}食材…"><button class="btn light" type="submit">＋ 新增</button></form>`:''}</details>`}).join('')}<section class="section"><h2>推薦料理</h2>${recommendations().map(r=>`<article class="card"><div class="row between"><div class="grow"><h3>${esc(r.name)}</h3><div class="muted">${r.matched}/${r.ingredients.length} 項食材符合 · ${r.time} 分鐘</div></div><span class="pill">${r.missing.length?'缺 '+r.missing.length+' 項':'食材齊全'}</span></div><div class="muted" style="margin:8px 0">還缺：${r.missing.length?r.missing.map(ingText).join('、'):'不缺主要食材'}</div><div class="actions"><button class="btn outline" onclick="showDetail(${r.id})">查看做法</button>${r.missing.length?`<button class="btn" onclick="addMissing(${r.id})">缺少食材加入清單</button>`:''}</div></article>`).join('')||'<div class="empty">先選取食材，再查看推薦料理。</div>'}</section>`}
-else if(tab==='cook'){let all=cookable(),near=state.recipes.map(r=>({...r,missing:r.ingredients.filter(i=>!ingHave(i))})).filter(r=>r.missing.length===1).sort((a,b)=>a.time-b.time);v.innerHTML=`<h2>🍳 立刻煮</h2><p class="muted">依「現有食材」判斷，所需食材全都有的料理（${all.length} 道），由最快做好的排起。</p>${all.map(r=>`<article class="card"><div class="row between"><div class="grow"><h3>${esc(r.name)}</h3><div class="muted">${esc(r.category)} · 約 ${r.time} 分鐘</div></div><span class="pill">食材齊全</span></div><div class="muted" style="margin:8px 0">食材：${r.ingredients.map(ingText).join('、')}</div><div class="actions"><button class="btn" onclick="showDetail(${r.id})">開始煮 →</button></div></article>`).join('')||'<div class="empty">目前的食材還湊不出完整料理。<br>到「現有食材」多勾選一些，或看看下面只差一項的料理。</div>'}${near.length?`<section class="section"><h2>只差一項</h2>${near.map(r=>`<article class="card"><div class="grow"><h3>${esc(r.name)}</h3><div class="muted">還缺：${ingText(r.missing[0])} · ${r.time} 分鐘</div></div><div class="actions"><button class="btn outline" onclick="showDetail(${r.id})">查看做法</button><button class="btn light" onclick="addMissing(${r.id})">缺的加入清單</button></div></article>`).join('')}</section>`:''}`}
-else if(tab==='recipes'){if(!catList().includes(cat))cat='全部';let list=state.recipes.filter(r=>(cat==='全部'||r.category===cat)&&r.name.toLowerCase().includes(query.toLowerCase()));v.innerHTML=`<h2>我的食譜庫</h2><input class="input" placeholder="搜尋食譜名稱…" value="${esc(query)}" oninput="query=this.value;render()"><div class="chips">${catList().map(c=>`<button class="chip ${cat===c?'active':''}" onclick="cat=${esc(JSON.stringify(c))};render()">${esc(c)}</button>`).join('')}</div><div class="row between"><span class="muted">共 ${list.length} 道 · 粗體＝已有食材，已有越多越上面</span><button class="btn" onclick="openRecipeForm()">＋ 新增食譜</button></div>${list.sort((a,b)=>haveCount(b)-haveCount(a)).map(recipeCard).join('')||'<div class="empty">找不到符合的食譜。</div>'}`}
-else if(tab==='shopping'){let done=state.shopping.filter(x=>x.checked).length;v.innerHTML=`<h2>購物清單</h2><p class="muted">勾選已買項目；清單會自動保存。</p><form onsubmit="event.preventDefault();addShopping()"><div class="row"><input class="input" id="shopInput" placeholder="新增食材，例如：牛奶" style="margin-bottom:10px"><button class="btn" type="submit">新增</button></div></form><div class="card"><div class="row between"><div><strong>採買進度</strong><div class="muted">${done} / ${state.shopping.length} 項已完成</div></div><strong>${state.shopping.length?Math.round(done/state.shopping.length*100):0}%</strong></div><div class="bar"><span style="width:${state.shopping.length?done/state.shopping.length*100:0}%"></span></div></div>${state.shopping.map(x=>`<div class="card row"><label class="row grow"><input type="checkbox" ${x.checked?'checked':''} onchange="checkShopping(${x.id},this.checked)"><span class="${x.checked?'done':''}">${esc(x.name)}${x.qty?`<span class="qty">${esc(x.qty)}</span>`:''}</span></label><button class="btn danger" onclick="removeShopping(${x.id})">刪除</button></div>`).join('')||'<div class="empty">清單目前是空的。</div>'}${done?'<button class="btn outline" onclick="clearChecked()">清除已買項目</button>':''}`}
-else if(tab==='settings'){v.innerHTML=`<h2>資料管理</h2>${cloudCard()}<div class="card"><h3>自動保存</h3><p class="muted">食譜、收藏、現有食材和購物清單會保存到此瀏覽器的本機儲存空間。使用同一台裝置、同一個瀏覽器開啟時可保留；清除瀏覽器資料、換裝置或換瀏覽器可能會遺失。</p><span class="pill">本機保存已啟用</span></div><div class="card"><h3>備份與還原</h3><p class="muted">匯出 JSON 備份檔，可在換裝置前保存資料；需要時可匯入還原。</p><div class="actions"><button class="btn" onclick="exportData()">匯出備份</button><button class="btn outline" onclick="document.getElementById('importFile').click()">匯入備份</button><input id="importFile" type="file" accept="application/json,.json" class="hidden" onchange="importData(event)"></div></div><div class="card"><h3>恢復初始範例</h3><p class="muted">這會刪除目前食譜、收藏、現有食材和購物清單，並載入範例資料。</p><button class="btn danger" onclick="resetData()">恢復初始資料</button></div>`}
+/* ===== 雲端設定：貼上 Firebase 的 firebaseConfig（沒填就是單機模式） ===== */
+var CFG={apiKey:"AIzaSyBtSDbVU2V2r73duPrp9shdADx0CeEhTAg",authDomain:"where-stest.firebaseapp.com",projectId:"where-stest",appId:"1:701745866064:web:daddb3230eec08b12e7855"};
+/* =========================================================================== */
+var FB="https://www.gstatic.com/firebasejs/10.14.1/";
+var TYPES=["選擇題","填充題","是非題","簡答題","問答題","計算題"];
+var LK="tmzne_v2";
+var S={events:[],bank:[],papers:[]};
+var L={draft:[],title:"",pid:null};
+var C=null,user=null,unsubs=[],editId=null;
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function pad(n){return n<10?"0"+n:""+n}
+function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},2600)}
+function who(){return user?(user.displayName||user.email.split("@")[0]):"本機"}
+function saveL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");o.L=L;if(!user)o.S=S;localStorage.setItem(LK,JSON.stringify(o))}catch(e){}}
+function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=Object.assign(L,o.L);if(o.S)S=Object.assign(S,o.S)}catch(e){}}
+
+/* ---------- data layer ---------- */
+async function putMany(col,arr){
+ arr.forEach(function(o){o.ts=o.ts||Date.now();o.by=o.by||who()});
+ if(C&&user){await Promise.all(arr.map(function(o){return C.F.setDoc(C.F.doc(C.db,col,o.id),o)}))}
+ else{arr.forEach(function(o){var i=S[col].findIndex(function(x){return x.id===o.id});if(i>-1)S[col][i]=o;else S[col].unshift(o)});saveL();renderAll()}
 }
-function recommendations(){return state.recipes.map(r=>({...r,matched:r.ingredients.filter(i=>ingHave(i)).length,missing:r.ingredients.filter(i=>!ingHave(i))})).filter(r=>r.matched>0).sort((a,b)=>b.matched-a.matched)}
-function togglePantry(x){selectedPantry.has(x)?selectedPantry.delete(x):selectedPantry.add(x);state.pantry=[...selectedPantry];save();render()}
-function clearPantry(){selectedPantry.clear();save();render()}
-function savePantry(){save();toast('現有食材已保存。')}
-function toggleFav(id){let r=recipe(id);if(r){r.favorite=!r.favorite;save();render();toast(r.favorite?'已加入收藏':'已取消收藏')}}
-function showDetail(id){selectedId=id;render()}
-function detailHTML(r){if(!r)return '<div class="empty">找不到這道食譜。</div>';return `<button class="btn outline" onclick="selectedId=null;render()">← 返回</button><section class="section"><h1>${esc(r.name)}</h1><span class="pill">${esc(r.category)}</span><span class="pill">約 ${r.time} 分鐘</span><button class="btn light" onclick="toggleFav(${r.id});selectedId=${r.id};render()">${r.favorite?'♥ 已收藏':'♡ 加入收藏'}</button></section><section class="section"><h2>所需食材</h2>${r.ingredients.map(i=>`<div class="checkrow"><span class="grow">${esc(i.name)}<span class="qty">${esc(i.qty)}</span>${i.subs&&i.subs.length?`<div class="muted small">可替代：${i.subs.map(esc).join("、")}</div>`:''}</span><button class="btn light" onclick="addOneShopping(${esc(JSON.stringify(i.name))},${esc(JSON.stringify(i.qty))})">＋ 加入清單</button></div>`).join('')}<div class="actions"><button class="btn" onclick="addAllShopping(${r.id})">將食材加入購物清單</button></div></section><section class="section"><h2>料理步驟</h2>${r.steps.length?r.steps.map((s,i)=>`<div class="row" style="align-items:flex-start;margin:14px 0"><span class="logo" style="width:30px;height:30px;border-radius:50%;font-size:13px;flex-shrink:0">${i+1}</span><div style="padding-top:5px;line-height:1.6">${esc(s)}</div></div>`).join(''):'<p class="muted">尚未填寫步驟。</p>'}</section><div class="actions"><button class="btn outline" onclick="openRecipeForm(${r.id})">編輯食譜</button><button class="btn danger" onclick="deleteRecipe(${r.id})">刪除食譜</button></div>`}
-function openRecipeForm(id=null){editId=id;let r=id?recipe(id):null,sel=r?(baseCats.includes(r.category)?r.category:'其他'):'蛋料理',oth=r&&!baseCats.includes(r.category)&&r.category!=='其他'?r.category:'';document.getElementById('view').innerHTML=`<button class="btn outline" onclick="go('recipes')">← 返回食譜庫</button><h2 style="margin-top:16px">${r?'編輯食譜':'新增食譜'}</h2><form onsubmit="event.preventDefault();saveRecipe()"><label class="label">食譜名稱 *</label><input class="input" id="rName" required value="${esc(r?.name||'')}" placeholder="例如：番茄炒蛋"><label class="label">料理分類</label><select class="input" id="rCat" onchange="document.getElementById('rCatOther').classList.toggle('hidden',this.value!=='其他')">${[...baseCats,'其他'].map(c=>`<option ${sel===c?'selected':''}>${c}</option>`).join('')}</select><input class="input ${sel==='其他'?'':'hidden'}" id="rCatOther" placeholder="輸入自訂分類，例如：湯品、甜點" value="${esc(oth)}"><label class="label">準備時間（分鐘）</label><input class="input" id="rTime" type="number" min="1" value="${r?.time||15}"><label class="label">食材與數量 *</label><div id="ingList"></div><button type="button" class="btn light" style="width:100%;margin-bottom:12px" onclick="addIngRow()">＋ 新增食材</button><label class="label">料理步驟（每行一個步驟）</label><textarea class="input" id="rSteps" rows="5" placeholder="備料&#10;下鍋烹調&#10;調味上桌">${esc(r?.steps.join('\n')||'')}</textarea><button class="btn" type="submit" style="width:100%">保存食譜</button></form>`;(r&&r.ingredients.length?r.ingredients:[{name:'',qty:''}]).forEach(i=>addIngRow(i.name,i.qty,(i.subs||[]).join('、')))}
-function ingOptions(n){let all=Object.values(state.lists).flat();return '<option value="">選擇食材…</option>'+Object.entries(state.lists).filter(([g,l])=>l.length).map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(x=>`<option ${x===n?'selected':''}>${esc(x)}</option>`).join('')}</optgroup>`).join('')+(n&&!all.includes(n)?`<optgroup label="其他"><option selected>${esc(n)}</option></optgroup>`:'')}
-function addIngRow(n='',q='',s=''){let d=document.createElement('div');d.className='ing-row';d.innerHTML=`<select class="input n">${ingOptions(n)}</select><input class="input q" placeholder="數量，例：2 顆、100g" value="${esc(q)}"><button type="button" onclick="this.parentNode.remove()">✕</button><input class="input s" placeholder="可替代食材（用、分隔），例：金針菇、香菇" value="${esc(s)}">`;document.getElementById('ingList').appendChild(d)}
-function saveRecipe(){let name=document.getElementById('rName').value.trim(),ingredients=[...document.querySelectorAll('#ingList .ing-row')].map(d=>{let nm=d.children[0].value.trim();return{name:nm,qty:d.children[1].value.trim(),subs:d.children[3].value.split(/[,，、\n]/).map(x=>x.trim()).filter(x=>x&&x!==nm)}}).filter(x=>x.name);if(!name||!ingredients.length){toast('請填寫食譜名稱與食材');return}let item={id:editId??Math.max(0,...state.recipes.map(r=>r.id))+1,name,category:(()=>{let v=document.getElementById('rCat').value;return v==='其他'?(document.getElementById('rCatOther').value.trim()||'其他'):v})(),time:Math.max(1,Number(document.getElementById('rTime').value)||15),ingredients,steps:document.getElementById('rSteps').value.split('\n').map(x=>x.trim()).filter(Boolean),favorite:editId?!!recipe(editId)?.favorite:false};if(editId){state.recipes=state.recipes.map(r=>r.id===editId?item:r)}else state.recipes.unshift(item);save();tab='recipes';selectedId=null;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab==='recipes'));render();toast('食譜已保存')}
-function deleteRecipe(id){if(!confirm('確定刪除此食譜？此操作無法直接復原。'))return;state.recipes=state.recipes.filter(r=>r.id!==id);save();selectedId=null;render();toast('食譜已刪除')}
-function addShopping(){let el=document.getElementById('shopInput'),n=el.value.trim();if(!n)return;if(state.shopping.some(x=>x.name===n)){toast('這項食材已在清單中');return}state.shopping.push({id:Math.max(0,...state.shopping.map(x=>x.id))+1,name:n,checked:false});save();render();toast('已加入購物清單')}
-function nextShopId(){return Math.max(0,...state.shopping.map(x=>x.id))+1}
-function addOneShopping(n,q=''){if(!state.shopping.some(x=>x.name===n)){state.shopping.push({id:nextShopId(),name:n,qty:q,checked:false});save();toast('已加入購物清單')}else toast('這項食材已在清單中')}
-function addAllShopping(id){let r=recipe(id);if(!r)return;let have=state.shopping.map(x=>x.name),newItems=r.ingredients.filter(i=>!have.includes(i.name));newItems.forEach(i=>state.shopping.push({id:nextShopId(),name:i.name,qty:i.qty,checked:false}));save();render();toast(newItems.length?'已加入尚未列入的食材':'食材都已在清單中')}
-function addMissing(id){let r=recipe(id);if(!r)return;let have=state.shopping.map(x=>x.name);r.ingredients.filter(i=>!ingHave(i)&&!have.includes(i.name)).forEach(i=>state.shopping.push({id:nextShopId(),name:i.name,qty:i.qty,checked:false}));save();toast('缺少的食材已加入購物清單')}
-function addCustomPantry(gi){let g=Object.keys(state.lists)[gi],n=document.getElementById('cu'+gi).value.trim();if(!n)return;if(!state.lists[g].includes(n))state.lists[g].push(n);selectedPantry.add(n);save();render();toast('已加入「'+n+'」')}
-function addCategory(){let n=document.getElementById('newCat').value.trim();if(!n)return;if(state.lists[n]){toast('已有這個分類');return}state.lists[n]=[];save();render();toast('已新增分類「'+n+'」')}
-function renameCat(gi){let g=Object.keys(state.lists)[gi],n=(prompt('分類名稱',g)||'').trim();if(!n||n===g)return;if(state.lists[n]){toast('已有這個分類');return}let o={};for(const k in state.lists)o[k===g?n:k]=state.lists[k];state.lists=o;save();render()}
-function delCat(gi){let g=Object.keys(state.lists)[gi];if(!confirm('刪除分類「'+g+'」及其中所有食材？'))return;let old=state.lists[g];delete state.lists[g];old.forEach(x=>{if(!Object.values(state.lists).some(l=>l.includes(x)))selectedPantry.delete(x)});save();render()}
-function delItem(gi,n){let g=Object.keys(state.lists)[gi];state.lists[g]=state.lists[g].filter(x=>x!==n);if(!Object.values(state.lists).some(l=>l.includes(n)))selectedPantry.delete(n);save();render()}
-function restoreDefaults(){for(const g in groups){if(!state.lists[g])state.lists[g]=[];groups[g].forEach(x=>{if(!state.lists[g].includes(x))state.lists[g].push(x)})}save();render();toast('已還原內建食材')}
-function checkShopping(id,v){let x=state.shopping.find(x=>x.id===id);if(x)x.checked=v;save();render()}
-function removeShopping(id){state.shopping=state.shopping.filter(x=>x.id!==id);save();render()}
-function clearChecked(){state.shopping=state.shopping.filter(x=>!x.checked);save();render()}
-function exportData(){save();let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='我的食譜備份.json';a.click();URL.revokeObjectURL(url);toast('已匯出備份檔')}
-function importData(e){let f=e.target.files[0];if(!f)return;let reader=new FileReader();reader.onload=()=>{try{let d=JSON.parse(reader.result);if(!Array.isArray(d.recipes)||!Array.isArray(d.shopping))throw Error();state=norm({recipes:d.recipes,shopping:d.shopping,pantry:Array.isArray(d.pantry)?d.pantry:[],custom:d.custom||{},lists:d.lists,plans:d.plans});selectedPantry=new Set(state.pantry);save();go('home');toast('備份還原成功')}catch(err){toast('檔案格式不正確，無法還原')}};reader.readAsText(f);e.target.value=''}
-function resetData(){if(!confirm('確定恢復初始資料？目前資料會被覆蓋。'))return;state=norm({custom:{},recipes:JSON.parse(JSON.stringify(seed)),shopping:[],pantry:['雞蛋','番茄','香菇']});selectedPantry=new Set(state.pantry);save();go('home');toast('已恢復初始資料')}
-render();
-</script>
-<script type="module">
-try{
-const B='https://www.gstatic.com/firebasejs/10.14.1/';
-const {initializeApp}=await import(B+'firebase-app.js');
-const A=await import(B+'firebase-auth.js');
-const F=await import(B+'firebase-firestore.js');
-const app=initializeApp({apiKey:"AIzaSyA1Q8qo0oHujve1uaW5TrPc7JP6HLEGDj8",authDomain:"little-kitchen-4ae3d.firebaseapp.com",projectId:"little-kitchen-4ae3d",storageBucket:"little-kitchen-4ae3d.firebasestorage.app",messagingSenderId:"21630748543",appId:"1:21630748543:web:e4387d351270099c14fc4a"});
-const auth=A.getAuth(app),db=F.getFirestore(app);
-let unsub=null,timer=null,ref=null;
-const msg=c=>({'auth/invalid-credential':'電子郵件或密碼錯誤','auth/invalid-email':'電子郵件格式不正確','auth/email-already-in-use':'這個電子郵件已註冊，請直接登入','auth/weak-password':'密碼至少需要 6 碼','auth/missing-password':'請輸入密碼','auth/network-request-failed':'網路連線失敗','auth/operation-not-allowed':'尚未在 Firebase 啟用此登入方式','auth/unauthorized-domain':'此網址尚未加入 Firebase 授權網域'}[c]||('登入失敗：'+c));
-const status=t=>{window.cloudStatus=t;window.refreshSettings()};
-window.cloudPush=()=>{if(!ref)return;clearTimeout(timer);timer=setTimeout(()=>{let L=window.getLocal();if(!L.updatedAt)L.updatedAt=Date.now();F.setDoc(ref,{json:JSON.stringify(L),updatedAt:L.updatedAt}).then(()=>status('已同步')).catch(e=>status('同步失敗：'+e.code))},800)};
-const cred=()=>[document.getElementById('cEmail').value.trim(),document.getElementById('cPass').value];
-window.cloudSignIn=async()=>{try{await A.signInWithEmailAndPassword(auth,...cred())}catch(x){window.toast(msg(x.code))}};
-window.cloudSignUp=async()=>{try{await A.createUserWithEmailAndPassword(auth,...cred())}catch(x){window.toast(msg(x.code))}};
-window.cloudGoogle=async()=>{const p=new A.GoogleAuthProvider();try{await A.signInWithPopup(auth,p)}catch(x){if(x.code==='auth/popup-blocked'||x.code==='auth/operation-not-supported-in-this-environment'){try{await A.signInWithRedirect(auth,p)}catch(y){window.toast(msg(y.code))}}else if(x.code!=='auth/popup-closed-by-user'&&x.code!=='auth/cancelled-popup-request')window.toast(msg(x.code))}};
-window.cloudSignOut=()=>A.signOut(auth);
-A.onAuthStateChanged(auth,user=>{
- window.cloudReady=true;window.cloudUser=user;if(unsub){unsub();unsub=null}ref=null;
- if(user){ref=F.doc(db,'kitchen',user.uid);window.cloudStatus='同步中…';
-  unsub=F.onSnapshot(ref,snap=>{let L=window.getLocal();
-   if(!snap.exists()){window.cloudPush();return}
-   let d=snap.data(),rt=d.updatedAt||0,lt=L.updatedAt||0;
-   if(rt>lt){try{window.applyRemote(JSON.parse(d.json))}catch(e){}}
-   else if(rt<lt&&!snap.metadata.hasPendingWrites){window.cloudPush()}
-   status('已同步')},e=>status('同步失敗：'+e.code))
- }else window.cloudStatus='';
- window.refreshSettings()});
-}catch(e){window.cloudError=true;if(window.refreshSettings)window.refreshSettings()}
+async function del(col,id){
+ if(C&&user)await C.F.deleteDoc(C.F.doc(C.db,col,id));
+ else{S[col]=S[col].filter(function(x){return x.id!==id});saveL();renderAll()}
+}
+function act(p){return p.catch(function(e){toast("操作失敗："+(e.code||e.message))})}
+var LOCAL=null;
+function listen(){
+ stop();LOCAL=S;S={events:[],bank:[],papers:[]};
+ ["bank","papers","events"].forEach(function(col){
+  unsubs.push(C.F.onSnapshot(C.F.collection(C.db,col),function(s){
+   S[col]=s.docs.map(function(d){return d.data()}).sort(function(a,b){return(b.ts||0)-(a.ts||0)});renderAll();
+  },function(e){toast("讀取失敗："+e.code)}));
+ });
+ renderAll();
+}
+function stop(){unsubs.forEach(function(u){u()});unsubs=[];if(LOCAL){S=LOCAL;LOCAL=null}}
+function status(){
+ var on=CFG.apiKey&&C;
+ $("whoT").textContent=!CFG.apiKey?"單機模式":!C?"雲端連線中…":user?"☁ 已同步・"+(user.displayName||user.email):"本機資料・尚未登入";
+ $("stT").textContent=!CFG.apiKey?"尚未設定 Firebase，目前是單機模式，資料只存在這個瀏覽器。":!C?"正在連線到雲端…":user?"已登入："+(user.displayName?user.displayName+"（"+user.email+"）":user.email)+"。題庫、出卷紀錄和日曆與其他登入的人共用。":"目前使用這個瀏覽器的本機資料。登入 Google 帳號後會切換成多人共用的雲端資料，本機資料會保留，不會自動上傳。";
+ $("liBtn").style.display=on&&!user?"":"none";$("outBtn").style.display=user?"":"none";
+}
+async function init(){
+ loadL();renderAll();status();
+ if(!CFG.apiKey)return;
+ try{
+  var A=await import(FB+"firebase-app.js"),F=await import(FB+"firebase-firestore.js"),U=await import(FB+"firebase-auth.js");
+  var app=A.initializeApp(CFG);C={F:F,U:U,db:F.getFirestore(app),auth:U.getAuth(app)};
+  U.onAuthStateChanged(C.auth,function(u){
+   user=u;
+   if(u){$("login").style.display="none";listen()}else{stop();renderAll()}
+   status();
+  });
+ }catch(e){$("whoT").textContent="雲端連線失敗，請檢查設定"}
+}
+async function auth(){
+ $("liErr").textContent="";
+ var pr=new C.U.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
+ try{await C.U.signInWithPopup(C.auth,pr)}
+ catch(x){
+  if(x.code==="auth/popup-blocked"||x.code==="auth/operation-not-supported-in-this-environment"){try{await C.U.signInWithRedirect(C.auth,pr);return}catch(y){x=y}}
+  var m={"auth/popup-closed-by-user":"登入視窗被關閉了，請再試一次","auth/cancelled-popup-request":"請再按一次登入","auth/unauthorized-domain":"這個網址還沒加入 Firebase 的「已授權網域」","auth/operation-not-allowed":"Firebase 還沒開啟 Google 登入"};
+  $("liErr").textContent=m[x.code]||("登入失敗："+x.code);
+ }
+}
+$("liBtn").onclick=function(){if(C)auth()};
+$("outBtn").onclick=function(){if(C)C.U.signOut(C.auth)};
+$("setBtn").onclick=function(){$("liErr").textContent="";status();$("login").style.display="flex"};
+$("setClose").onclick=function(){$("login").style.display="none"};
+$("login").onclick=function(e){if(e.target===this)this.style.display="none"};
+
+/* ---------- nav ---------- */
+function go(p){
+ document.querySelectorAll("section").forEach(function(s){s.classList.toggle("on",s.id===p)});
+ document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on",b.dataset.p===p)});
+ window.scrollTo(0,0);
+}
+document.querySelectorAll("#nav button").forEach(function(b){b.onclick=function(){go(b.dataset.p)}});
+$("toBank").onclick=function(){go("bank")};
+
+/* ---------- calendar ---------- */
+var cur=new Date();cur.setDate(1);var sel=ds(new Date());
+"日一二三四五六".split("").forEach(function(t){var d=document.createElement("div");d.className="dow";d.textContent=t;$("dows").appendChild(d)});
+function renderCal(){
+ $("mlabel").textContent=cur.getFullYear()+" 年 "+(cur.getMonth()+1)+" 月";
+ var h="",first=cur.getDay(),n=new Date(cur.getFullYear(),cur.getMonth()+1,0).getDate(),today=ds(new Date());
+ for(var i=0;i<first;i++)h+='<div class="day empty"></div>';
+ for(var d=1;d<=n;d++){
+  var key=cur.getFullYear()+"-"+pad(cur.getMonth()+1)+"-"+pad(d);
+  var ev=S.events.filter(function(e){return e.date===key});
+  h+='<button class="day'+(key===today?" today":"")+(key===sel?" sel":"")+'" data-d="'+key+'"><span class="n">'+d+"</span>"+ev.slice(0,2).map(function(e){return '<span class="ev">'+esc(e.title)+"</span>"}).join("")+(ev.length>2?'<span class="more">還有 '+(ev.length-2)+" 場</span>":"")+"</button>";
+ }
+ $("cal").innerHTML=h;
+ $("cal").querySelectorAll("button").forEach(function(b){b.onclick=function(){sel=b.dataset.d;renderCal();renderEv()}});
+}
+function renderEv(){
+ $("dlabel").textContent=sel+" 的考試";
+ var l=S.events.filter(function(e){return e.date===sel});
+ $("evList").innerHTML=l.length?l.map(function(e){return '<div class="item"><div class="t">'+esc(e.title)+'<div class="ans">新增者：'+esc(e.by)+'</div></div><button class="btn ghost sm" data-del="'+e.id+'">刪除</button></div>'}).join(""):'<div class="empty-msg">這天還沒有考試，輸入名稱後按「新增考試」。</div>';
+ $("evList").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){act(del("events",b.dataset.del))}});
+}
+$("prev").onclick=function(){cur.setMonth(cur.getMonth()-1);renderCal()};
+$("next").onclick=function(){cur.setMonth(cur.getMonth()+1);renderCal()};
+$("evAdd").onclick=function(){
+ var t=$("evT").value.trim();if(!t){$("evT").focus();return}
+ $("evT").value="";act(putMany("events",[{id:uid(),date:sel,title:t}]));
+};
+
+/* ---------- 出題 ---------- */
+function renderDraft(){
+ $("pTitle").value=L.title;$("mCount").textContent=L.draft.length;$("mUpd").style.display=L.pid?"":"none";
+ $("mList").innerHTML=L.draft.length?L.draft.map(function(q,i){return '<div class="item"><div class="t"><b>'+(i+1)+".</b> "+esc(q.q)+(q.a?'<div class="ans">答案：'+esc(q.a)+"</div>":"")+'</div><div class="acts"><button class="btn ghost sm" data-up="'+i+'">↑</button><button class="btn ghost sm" data-dn="'+i+'">↓</button><button class="btn ghost sm" data-rm="'+i+'">移除</button></div></div>'}).join(""):'<div class="empty-msg">考卷還是空的，從左邊加入題目，或到考古題總集挑題。</div>';
+ function mv(i,j){if(j<0||j>=L.draft.length)return;var t=L.draft[i];L.draft[i]=L.draft[j];L.draft[j]=t;saveL();renderDraft()}
+ $("mList").querySelectorAll("[data-up]").forEach(function(b){b.onclick=function(){mv(+b.dataset.up,+b.dataset.up-1)}});
+ $("mList").querySelectorAll("[data-dn]").forEach(function(b){b.onclick=function(){mv(+b.dataset.dn,+b.dataset.dn+1)}});
+ $("mList").querySelectorAll("[data-rm]").forEach(function(b){b.onclick=function(){L.draft.splice(+b.dataset.rm,1);saveL();renderDraft();renderBank()}});
+}
+$("pTitle").oninput=function(){L.title=this.value;saveL()};
+$("mAdd").onclick=function(){
+ var q=$("mQ").value.trim();if(!q){$("mQ").focus();return}
+ L.draft.push({q:q,a:$("mA").value.trim()});$("mQ").value="";$("mA").value="";saveL();renderDraft();
+};
+$("mClear").onclick=function(){if(confirm("確定清空目前的考卷？")){L.draft=[];L.title="";L.pid=null;saveL();renderDraft();renderBank()}};
+function savePaper(upd){
+ if(!L.draft.length){toast("考卷是空的，先加入題目");return}
+ var o={id:upd?L.pid:uid(),title:L.title||"未命名考卷",date:ds(new Date()),items:L.draft.slice()};
+ if(upd){var old=S.papers.filter(function(p){return p.id===L.pid})[0];if(old){o.ts=old.ts;o.by=old.by}}
+ act(putMany("papers",[o]).then(function(){L.pid=o.id;saveL();renderDraft();toast(upd?"已更新紀錄":"已存到出卷紀錄");go("rec")}));
+}
+$("mSave").onclick=function(){savePaper(false)};$("mUpd").onclick=function(){savePaper(true)};
+
+/* ---------- 輸出 ---------- */
+function blocksOf(title,items,ans){
+ var b=['<h1 style="text-align:center;font-size:26px;margin:0 0 8px">'+esc(title||"考卷")+"</h1>"];
+ items.forEach(function(q,i){b.push('<div style="margin:0 0 6px"><b>'+(i+1)+".</b> "+esc(q.q).replace(/\n/g,"<br>")+"</div>")});
+ if(ans){b.push("@@PAGE");b.push('<h1 style="text-align:center;font-size:26px;margin:0 0 8px">答案</h1>');items.forEach(function(q,i){b.push("<div>"+(i+1)+". "+esc(q.a||"（未填）")+"</div>")})}
+ return b;
+}
+async function toPdf(title,items){
+ if(!items.length){toast("考卷是空的");return}
+ if(!window.jspdf||!window.html2canvas){toast("PDF 工具沒載入成功，請確認網路後重新整理");return}
+ toast("正在產生 PDF…");
+ var stage=document.createElement("div");
+ stage.style.cssText="position:fixed;left:-10000px;top:0;width:680px;background:#fff;color:#000;font:16px/1.8 'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif";
+ document.body.appendChild(stage);
+ try{
+  var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"}),y=15,W=180,bl=blocksOf(title,items,$("withAns").checked);
+  for(var i=0;i<bl.length;i++){
+   if(bl[i]==="@@PAGE"){pdf.addPage();y=15;continue}
+   var d=document.createElement("div");d.style.padding="2px 0";d.innerHTML=bl[i];stage.appendChild(d);
+   var c=await window.html2canvas(d,{scale:2,backgroundColor:"#fff"});stage.removeChild(d);
+   var w=W,h=c.height*W/c.width;if(h>265){w=W*265/h;h=265}
+   if(y+h>282){pdf.addPage();y=15}
+   pdf.addImage(c.toDataURL("image/jpeg",0.92),"JPEG",15,y,w,h);y+=h+2;
+  }
+  pdf.save((title||"考卷")+".pdf");toast("PDF 已下載");
+ }catch(e){toast("PDF 產生失敗，請改用「輸出 Word 檔」")}
+ stage.remove();
+}
+function toDoc(title,items){
+ if(!items.length){toast("考卷是空的");return}
+ var body=blocksOf(title,items,$("withAns").checked).map(function(b){return b==="@@PAGE"?'<br style="page-break-before:always">':b}).join("");
+ var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(title)+"</title></head><body>"+body+"</body></html>";
+ var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+html],{type:"application/msword"}));
+ a.download=(title||"考卷")+".doc";document.body.appendChild(a);a.click();a.remove();
+}
+$("mPdf").onclick=function(){toPdf(L.title,L.draft)};
+$("mDoc").onclick=function(){toDoc(L.title,L.draft)};
+
+/* ---------- 出卷紀錄 ---------- */
+function renderRec(){
+ $("recList").innerHTML=S.papers.length?S.papers.map(function(p){return '<div class="item"><div class="t"><b>'+esc(p.title)+'</b><div class="ans">'+esc(p.date)+"・"+p.items.length+" 題・建立者："+esc(p.by)+'</div></div><div class="acts"><button class="btn sm" data-ld="'+p.id+'">載入編輯</button><button class="btn ghost sm" data-pf="'+p.id+'">PDF</button><button class="btn ghost sm" data-dc="'+p.id+'">Word</button><button class="btn ghost sm" data-dl="'+p.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">還沒有紀錄。在「出題」頁按「存到出卷紀錄」就會出現在這裡。</div>';
+ function find(id){return S.papers.filter(function(p){return p.id===id})[0]}
+ $("recList").querySelectorAll("[data-ld]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.ld);L.title=p.title;L.draft=p.items.slice();L.pid=p.id;saveL();renderDraft();renderBank();go("make")}});
+ $("recList").querySelectorAll("[data-pf]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.pf);toPdf(p.title,p.items)}});
+ $("recList").querySelectorAll("[data-dc]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.dc);toDoc(p.title,p.items)}});
+ $("recList").querySelectorAll("[data-dl]").forEach(function(b){b.onclick=function(){if(confirm("刪除這筆紀錄？所有人都會看不到。"))act(del("papers",b.dataset.dl))}});
+}
+
+/* ---------- 考古題總集 ---------- */
+function uniq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i})}
+function opts(el,all,list){var v=el.value;el.innerHTML='<option value="">'+all+"</option>"+list.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+"</option>"}).join("");el.value=list.indexOf(v)>-1?v:""}
+function renderBank(){
+ var ys=uniq(S.bank.map(function(b){return String(b.y)})).sort().reverse(),cs=uniq(S.bank.map(function(b){return b.c})).sort(),ts=uniq(TYPES.concat(S.bank.map(function(b){return b.t})));
+ opts($("fY"),"全部年份",ys);opts($("fC"),"全部科目",cs);opts($("fT"),"全部題型",ts);
+ $("subs").innerHTML=cs.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
+ $("types").innerHTML=ts.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
+ var k=$("fK").value.trim();
+ var l=S.bank.filter(function(b){return(!$("fY").value||String(b.y)===$("fY").value)&&(!$("fC").value||b.c===$("fC").value)&&(!$("fT").value||b.t===$("fT").value)&&(!k||(b.q+" "+(b.a||"")).indexOf(k)>-1)});
+ $("bN").textContent=l.length;$("bD").textContent=L.draft.length;
+ $("bList").innerHTML=l.length?l.map(function(b){return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span><div>"+esc(b.q)+"</div>"+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">'+(S.bank.length?"沒有符合篩選的題目。":"題庫是空的，從左邊新增第一題。")+"</div>";
+ function find(id){return S.bank.filter(function(z){return z.id===id})[0]}
+ $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);L.draft.push({q:b.q,a:b.a||""});saveL();renderDraft();$("bD").textContent=L.draft.length;toast("已加入考卷")}});
+ $("bList").querySelectorAll("[data-del]").forEach(function(x){x.onclick=function(){if(confirm("刪除這題？所有人都會看不到。"))act(del("bank",x.dataset.del))}});
+ $("bList").querySelectorAll("[data-ed]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.ed);editId=b.id;mode(false);$("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bQ").value=b.q;$("bA").value=b.a||"";$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0)}});
+}
+["fY","fC","fT"].forEach(function(i){$(i).onchange=renderBank});$("fK").oninput=renderBank;
+function mode(batch){$("oneBox").style.display=batch?"none":"";$("batBox").style.display=batch?"":"none";$("tS").className="btn sm"+(batch?" ghost":"");$("tB").className="btn sm"+(batch?"":" ghost")}
+$("tS").onclick=function(){mode(false)};$("tB").onclick=function(){if(editId)resetEdit();mode(true)};
+function resetEdit(){editId=null;$("addH").textContent="新增考古題";$("bAdd").textContent="新增題目";$("bCancel").style.display="none";$("bQ").value="";$("bA").value=""}
+$("bCancel").onclick=resetEdit;
+function meta(){
+ var y=$("bY").value.trim(),c=$("bC").value.trim(),t=$("bT").value.trim();
+ if(!y||!c||!t){toast("請先填年份、科目和題型");return null}
+ return{y:y,c:c,t:t};
+}
+$("bAdd").onclick=function(){
+ var m=meta();if(!m)return;var q=$("bQ").value.trim();if(!q){$("bQ").focus();return}
+ var o=Object.assign({id:editId||uid(),q:q,a:$("bA").value.trim()},m);
+ if(editId){var old=S.bank.filter(function(z){return z.id===editId})[0];if(old){o.ts=old.ts;o.by=old.by}}
+ var was=!!editId;
+ act(putMany("bank",[o]).then(function(){resetEdit();toast(was?"已儲存修改":"已新增")}));
+};
+function parseBatch(t){
+ return t.replace(/\r/g,"").split(/\n\s*\n/).map(function(b){return b.trim()}).filter(Boolean).map(function(b){
+  var a="",ls=[];
+  b.split("\n").forEach(function(l){var m=l.match(/^\s*(?:答案|解答|Ans(?:wer)?)\s*[:：]\s*(.*)$/i);if(m)a=m[1].trim();else ls.push(l)});
+  return{q:ls.join("\n").replace(/^\s*(?:第?\d+\s*[\.、\)）題]|\(\d+\))\s*/,"").trim(),a:a};
+ }).filter(function(x){return x.q});
+}
+$("bB").oninput=function(){var n=parseBatch(this.value).length;$("bCnt").textContent=n?" 目前偵測到 "+n+" 題。":""};
+$("bBAdd").onclick=function(){
+ var m=meta();if(!m)return;var l=parseBatch($("bB").value);if(!l.length){$("bB").focus();return}
+ var base=Date.now();
+ var arr=l.map(function(x,i){return Object.assign({id:uid()+i,ts:base-i,q:x.q,a:x.a},m)});
+ act(putMany("bank",arr).then(function(){$("bB").value="";$("bCnt").textContent="";toast("已新增 "+arr.length+" 題")}));
+};
+
+function renderAll(){renderCal();renderEv();renderDraft();renderRec();renderBank()}
+init();
 </script>
 </body>
 </html>
