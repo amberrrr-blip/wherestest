@@ -84,7 +84,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
   <button data-p="rec">出卷紀錄</button>
   <button data-p="bank">考古題總集</button>
  </nav>
- <div id="who"></div>
+ <div id="who"><div id="whoT"></div><button class="btn ghost sm" id="setBtn" style="margin-top:8px">⚙ 設定</button></div>
 </aside>
 <main>
 
@@ -172,10 +172,12 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 </div>
 
 <div id="login"><div class="card">
- <h3>題目在哪兒</h3>
- <div class="ans">登入後才能看到共用的題庫與紀錄</div>
- <div id="liErr" style="margin-top:10px"></div>
+ <h3>設定</h3>
+ <div id="stT" class="ans" style="margin-bottom:12px"></div>
+ <div id="liErr"></div>
  <div class="bar" style="margin-top:4px"><button class="btn" id="liBtn" style="width:100%;padding:11px">使用 Google 帳號登入</button></div>
+ <div class="bar"><button class="btn ghost" id="outBtn" style="width:100%">登出</button></div>
+ <div class="bar"><button class="btn ghost" id="setClose" style="width:100%">關閉</button></div>
 </div></div>
 <div id="toast"></div>
 
@@ -198,42 +200,49 @@ function pad(n){return n<10?"0"+n:""+n}
 function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},2600)}
 function who(){return user?(user.displayName||user.email.split("@")[0]):"本機"}
-function saveL(){try{var o={L:L};if(!C)o.S=S;localStorage.setItem(LK,JSON.stringify(o))}catch(e){}}
-function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=Object.assign(L,o.L);if(o.S&&!CFG.apiKey)S=Object.assign(S,o.S)}catch(e){}}
+function saveL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");o.L=L;if(!user)o.S=S;localStorage.setItem(LK,JSON.stringify(o))}catch(e){}}
+function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=Object.assign(L,o.L);if(o.S)S=Object.assign(S,o.S)}catch(e){}}
 
 /* ---------- data layer ---------- */
 async function putMany(col,arr){
  arr.forEach(function(o){o.ts=o.ts||Date.now();o.by=o.by||who()});
- if(C){await Promise.all(arr.map(function(o){return C.F.setDoc(C.F.doc(C.db,col,o.id),o)}))}
+ if(C&&user){await Promise.all(arr.map(function(o){return C.F.setDoc(C.F.doc(C.db,col,o.id),o)}))}
  else{arr.forEach(function(o){var i=S[col].findIndex(function(x){return x.id===o.id});if(i>-1)S[col][i]=o;else S[col].unshift(o)});saveL();renderAll()}
 }
 async function del(col,id){
- if(C)await C.F.deleteDoc(C.F.doc(C.db,col,id));
+ if(C&&user)await C.F.deleteDoc(C.F.doc(C.db,col,id));
  else{S[col]=S[col].filter(function(x){return x.id!==id});saveL();renderAll()}
 }
 function act(p){return p.catch(function(e){toast("操作失敗："+(e.code||e.message))})}
+var LOCAL=null;
 function listen(){
- unlisten();
+ stop();LOCAL=S;S={events:[],bank:[],papers:[]};
  ["bank","papers","events"].forEach(function(col){
   unsubs.push(C.F.onSnapshot(C.F.collection(C.db,col),function(s){
    S[col]=s.docs.map(function(d){return d.data()}).sort(function(a,b){return(b.ts||0)-(a.ts||0)});renderAll();
   },function(e){toast("讀取失敗："+e.code)}));
  });
+ renderAll();
 }
-function unlisten(){unsubs.forEach(function(u){u()});unsubs=[];S={events:[],bank:[],papers:[]};renderAll()}
+function stop(){unsubs.forEach(function(u){u()});unsubs=[];if(LOCAL){S=LOCAL;LOCAL=null}}
+function status(){
+ var on=CFG.apiKey&&C;
+ $("whoT").textContent=!CFG.apiKey?"單機模式":!C?"雲端連線中…":user?"☁ 已同步・"+(user.displayName||user.email):"本機資料・尚未登入";
+ $("stT").textContent=!CFG.apiKey?"尚未設定 Firebase，目前是單機模式，資料只存在這個瀏覽器。":!C?"正在連線到雲端…":user?"已登入："+(user.displayName?user.displayName+"（"+user.email+"）":user.email)+"。題庫、出卷紀錄和日曆與其他登入的人共用。":"目前使用這個瀏覽器的本機資料。登入 Google 帳號後會切換成多人共用的雲端資料，本機資料會保留，不會自動上傳。";
+ $("liBtn").style.display=on&&!user?"":"none";$("outBtn").style.display=user?"":"none";
+}
 async function init(){
- loadL();renderAll();
- if(!CFG.apiKey){$("who").textContent="單機模式（資料只存在這個瀏覽器）";return}
- $("who").textContent="連線中…";
+ loadL();renderAll();status();
+ if(!CFG.apiKey)return;
  try{
   var A=await import(FB+"firebase-app.js"),F=await import(FB+"firebase-firestore.js"),U=await import(FB+"firebase-auth.js");
   var app=A.initializeApp(CFG);C={F:F,U:U,db:F.getFirestore(app),auth:U.getAuth(app)};
   U.onAuthStateChanged(C.auth,function(u){
-   user=u;$("login").style.display=u?"none":"flex";
-   if(u){$("who").innerHTML="☁ 雲端同步中<br>"+esc(u.displayName||"")+"<br>"+esc(u.email)+' <button class="btn ghost sm" id="out">登出</button>';$("out").onclick=function(){U.signOut(C.auth)};listen()}
-   else{$("who").textContent="尚未登入";unlisten()}
+   user=u;
+   if(u){$("login").style.display="none";listen()}else{stop();renderAll()}
+   status();
   });
- }catch(e){$("who").textContent="雲端連線失敗，請檢查設定"}
+ }catch(e){$("whoT").textContent="雲端連線失敗，請檢查設定"}
 }
 async function auth(){
  $("liErr").textContent="";
@@ -246,6 +255,10 @@ async function auth(){
  }
 }
 $("liBtn").onclick=function(){if(C)auth()};
+$("outBtn").onclick=function(){if(C)C.U.signOut(C.auth)};
+$("setBtn").onclick=function(){$("liErr").textContent="";status();$("login").style.display="flex"};
+$("setClose").onclick=function(){$("login").style.display="none"};
+$("login").onclick=function(e){if(e.target===this)this.style.display="none"};
 
 /* ---------- nav ---------- */
 function go(p){
