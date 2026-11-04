@@ -174,10 +174,8 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 <div id="login"><div class="card">
  <h3>題目在哪兒</h3>
  <div class="ans">登入後才能看到共用的題庫與紀錄</div>
- <label for="liE">Email</label><input id="liE" type="email" autocomplete="username">
- <label for="liP">密碼（至少 6 個字元）</label><input id="liP" type="password" autocomplete="current-password">
- <div id="liErr"></div>
- <div class="bar" style="margin-top:4px"><button class="btn" id="liBtn">登入</button><button class="btn ghost" id="suBtn">註冊新帳號</button></div>
+ <div id="liErr" style="margin-top:10px"></div>
+ <div class="bar" style="margin-top:4px"><button class="btn" id="liBtn" style="width:100%;padding:11px">使用 Google 帳號登入</button></div>
 </div></div>
 <div id="toast"></div>
 
@@ -199,7 +197,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function pad(n){return n<10?"0"+n:""+n}
 function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},2600)}
-function who(){return user?user.email.split("@")[0]:"本機"}
+function who(){return user?(user.displayName||user.email.split("@")[0]):"本機"}
 function saveL(){try{var o={L:L};if(!C)o.S=S;localStorage.setItem(LK,JSON.stringify(o))}catch(e){}}
 function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=Object.assign(L,o.L);if(o.S&&!CFG.apiKey)S=Object.assign(S,o.S)}catch(e){}}
 
@@ -232,18 +230,22 @@ async function init(){
   var app=A.initializeApp(CFG);C={F:F,U:U,db:F.getFirestore(app),auth:U.getAuth(app)};
   U.onAuthStateChanged(C.auth,function(u){
    user=u;$("login").style.display=u?"none":"flex";
-   if(u){$("who").innerHTML="☁ 雲端同步中<br>"+esc(u.email)+' <button class="btn ghost sm" id="out">登出</button>';$("out").onclick=function(){U.signOut(C.auth)};listen()}
+   if(u){$("who").innerHTML="☁ 雲端同步中<br>"+esc(u.displayName||"")+"<br>"+esc(u.email)+' <button class="btn ghost sm" id="out">登出</button>';$("out").onclick=function(){U.signOut(C.auth)};listen()}
    else{$("who").textContent="尚未登入";unlisten()}
   });
  }catch(e){$("who").textContent="雲端連線失敗，請檢查設定"}
 }
-async function auth(su){
+async function auth(){
  $("liErr").textContent="";
- try{var e=$("liE").value.trim(),p=$("liP").value;
-  if(su)await C.U.createUserWithEmailAndPassword(C.auth,e,p);else await C.U.signInWithEmailAndPassword(C.auth,e,p);
- }catch(x){var m={"auth/invalid-credential":"帳號或密碼錯誤","auth/invalid-email":"Email 格式不正確","auth/weak-password":"密碼至少要 6 個字元","auth/email-already-in-use":"這個 Email 已經註冊過","auth/missing-password":"請輸入密碼"};$("liErr").textContent=m[x.code]||("失敗："+x.code)}
+ var pr=new C.U.GoogleAuthProvider();pr.setCustomParameters({prompt:"select_account"});
+ try{await C.U.signInWithPopup(C.auth,pr)}
+ catch(x){
+  if(x.code==="auth/popup-blocked"||x.code==="auth/operation-not-supported-in-this-environment"){try{await C.U.signInWithRedirect(C.auth,pr);return}catch(y){x=y}}
+  var m={"auth/popup-closed-by-user":"登入視窗被關閉了，請再試一次","auth/cancelled-popup-request":"請再按一次登入","auth/unauthorized-domain":"這個網址還沒加入 Firebase 的「已授權網域」","auth/operation-not-allowed":"Firebase 還沒開啟 Google 登入"};
+  $("liErr").textContent=m[x.code]||("登入失敗："+x.code);
+ }
 }
-$("liBtn").onclick=function(){auth(false)};$("suBtn").onclick=function(){auth(true)};
+$("liBtn").onclick=function(){if(C)auth()};
 
 /* ---------- nav ---------- */
 function go(p){
