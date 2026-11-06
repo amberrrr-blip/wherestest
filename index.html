@@ -154,7 +154,7 @@ img.qimg{max-height:150px;max-width:100%;border-radius:6px;margin-top:6px;displa
 </section>
 
 <section id="rec">
- <div class="card"><h2>出卷紀錄（所有人共用）</h2><div id="recList"></div></div>
+ <div class="card"><h2>出卷紀錄（只有你自己看得到）</h2><div id="recList"></div></div>
 </section>
 
 <section id="bank">
@@ -234,13 +234,15 @@ function saveL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");o.L=L;if(!
 function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=Object.assign(L,o.L);if(o.S)S=Object.assign(S,o.S)}catch(e){}}
 
 /* ---------- data layer ---------- */
+function ref(col,id){return C.F.doc.apply(null,[C.db].concat(col==="bank"?[col]:["users",user.uid,col],[id]))}
+function cref(col){return C.F.collection.apply(null,[C.db].concat(col==="bank"?[col]:["users",user.uid,col]))}
 async function putMany(col,arr){
  arr.forEach(function(o){o.ts=o.ts||Date.now();o.by=o.by||who()});
- if(C&&user){await Promise.all(arr.map(function(o){return C.F.setDoc(C.F.doc(C.db,col,o.id),o)}))}
+ if(C&&user){await Promise.all(arr.map(function(o){return C.F.setDoc(ref(col,o.id),o)}))}
  else{arr.forEach(function(o){var i=S[col].findIndex(function(x){return x.id===o.id});if(i>-1)S[col][i]=o;else S[col].unshift(o)});saveL();renderAll()}
 }
 async function del(col,id){
- if(C&&user)await C.F.deleteDoc(C.F.doc(C.db,col,id));
+ if(C&&user)await C.F.deleteDoc(ref(col,id));
  else{S[col]=S[col].filter(function(x){return x.id!==id});saveL();renderAll()}
 }
 function act(p){return p.catch(function(e){toast("操作失敗："+(e.code||e.message))})}
@@ -248,7 +250,7 @@ var LOCAL=null;
 function listen(){
  stop();LOCAL=S;S={events:[],bank:[],papers:[]};
  ["bank","papers","events"].forEach(function(col){
-  unsubs.push(C.F.onSnapshot(C.F.collection(C.db,col),function(s){
+  unsubs.push(C.F.onSnapshot(cref(col),function(s){
    S[col]=s.docs.map(function(d){return d.data()}).sort(function(a,b){return(b.ts||0)-(a.ts||0)});renderAll();
   },function(e){toast("讀取失敗："+e.code)}));
  });
@@ -258,7 +260,7 @@ function stop(){unsubs.forEach(function(u){u()});unsubs=[];if(LOCAL){S=LOCAL;LOC
 function status(){
  var on=CFG.apiKey&&C;
  $("whoT").textContent=!CFG.apiKey?"單機模式":!C?"雲端連線中…":user?"☁ 已同步・"+(user.displayName||user.email):"本機資料・尚未登入";
- $("stT").textContent=!CFG.apiKey?"尚未設定 Firebase，目前是單機模式，資料只存在這個瀏覽器。":!C?"正在連線到雲端…":user?"已登入："+(user.displayName?user.displayName+"（"+user.email+"）":user.email)+"。題庫、出卷紀錄和日曆與其他登入的人共用。":"目前使用這個瀏覽器的本機資料。登入 Google 帳號後會切換成多人共用的雲端資料，本機資料會保留，不會自動上傳。";
+ $("stT").textContent=!CFG.apiKey?"尚未設定 Firebase，目前是單機模式，資料只存在這個瀏覽器。":!C?"正在連線到雲端…":user?"已登入："+(user.displayName?user.displayName+"（"+user.email+"）":user.email)+"。考古題總集與其他登入的人共用，出卷紀錄和日曆只有你自己看得到。":"目前使用這個瀏覽器的本機資料。登入 Google 帳號後會切換成多人共用的雲端資料，本機資料會保留，不會自動上傳。";
  $("liBtn").style.display=on&&!user?"":"none";$("outBtn").style.display=user?"":"none";
 }
 async function init(){
@@ -317,7 +319,7 @@ function renderCal(){
 function renderEv(){
  $("dlabel").textContent=sel+" 的考試";
  var l=S.events.filter(function(e){return e.date===sel});
- $("evList").innerHTML=l.length?l.map(function(e){return '<div class="item"><div class="t">'+esc(e.title)+'<div class="ans">新增者：'+esc(e.by)+'</div></div><button class="btn ghost sm" data-del="'+e.id+'">刪除</button></div>'}).join(""):'<div class="empty-msg">這天還沒有考試，輸入名稱後按「新增考試」。</div>';
+ $("evList").innerHTML=l.length?l.map(function(e){return '<div class="item"><div class="t">'+esc(e.title)+'</div><button class="btn ghost sm" data-del="'+e.id+'">刪除</button></div>'}).join(""):'<div class="empty-msg">這天還沒有考試，輸入名稱後按「新增考試」。</div>';
  $("evList").querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){act(del("events",b.dataset.del))}});
 }
 $("prev").onclick=function(){cur.setMonth(cur.getMonth()-1);renderCal()};
@@ -330,7 +332,7 @@ $("evAdd").onclick=function(){
 /* ---------- 出題（文件編輯器） ---------- */
 var ed=$("doc"),docInit=false,savedRange=null;
 var DEF='<h2 style="text-align:center">考卷標題</h2>';
-function liHtml(q,a,imgs,qid){return '<li data-ans="'+esc(a||"")+'"'+(qid?' data-qid="'+esc(qid)+'"':"")+">"+esc(q).replace(/\n/g,"<br>")+(imgs||[]).map(function(u){return '<br><img src="'+u+'">'}).join("")+"</li>"}
+function liHtml(q,a,imgs,qid){return '<li data-ans="'+esc(a||"")+'"'+(qid?' data-qid="'+esc(qid)+'"':"")+">"+esc(q).replace(/\n/g,"<br>").replace(/ {2,}/g,function(m){return new Array(m.length+1).join("&nbsp;")})+(imgs||[]).map(function(u){return '<br><img src="'+u+'">'}).join("")+"</li>"}
 function fromItems(title,items){
  var h='<h2 style="text-align:center">'+esc(title||"考卷標題")+"</h2>";
  if(items&&items.length)h+="<ol>"+items.map(function(q){return liHtml(q.q,q.a)}).join("")+"</ol>";
@@ -378,19 +380,17 @@ $("mClear").onclick=function(){if(confirm("確定清空目前的考卷？")){ed.
 function savePaper(upd){
  if(!ed.textContent.trim()&&!ed.querySelector("img")){toast("考卷是空的");return}
  if(C&&user&&ed.innerHTML.length>900000){toast("考卷內容太大（圖片太多），請減少圖片後再存");return}
- var o={id:upd?L.pid:uid(),title:docTitle(ed.innerHTML),date:ds(new Date()),html:ed.innerHTML},qs={};
- ed.querySelectorAll("li[data-qid]").forEach(function(l){qs[l.getAttribute("data-qid")]=true});
+ var o={id:upd?L.pid:uid(),title:docTitle(ed.innerHTML),date:ds(new Date()),html:ed.innerHTML};
  if(upd){var old=S.papers.filter(function(p){return p.id===L.pid})[0];if(old){o.ts=old.ts;o.by=old.by}}
- act(putMany("papers",[o]).then(function(){L.pid=o.id;sync();renderDraft();return syncUse(o.id,o.title,o.date,qs)}).then(function(){toast(upd?"已更新紀錄":"已存到出卷紀錄");go("rec")}));
+ act(putMany("papers",[o]).then(function(){L.pid=o.id;sync();renderDraft();toast(upd?"已更新紀錄":"已存到出卷紀錄");go("rec")}));
 }
-async function syncUse(pid,title,date,qs){
- var ch=[];
- S.bank.forEach(function(q){
-  var old=q.use||[],u=old.filter(function(e){return e.pid!==pid});
-  if(qs[q.id])u.push({pid:pid,t:title,d:date});
-  if(qs[q.id]||u.length!==old.length)ch.push(Object.assign({},q,{use:u}));
+function useMap(){
+ var m={};
+ S.papers.forEach(function(p){
+  var seen={},h=p.html||"",re=/data-qid="([^"]+)"/g,x;
+  while((x=re.exec(h))){if(!seen[x[1]]){seen[x[1]]=1;(m[x[1]]=m[x[1]]||[]).push({t:p.title,d:p.date})}}
  });
- if(ch.length)await putMany("bank",ch);
+ return m;
 }
 $("mSave").onclick=function(){savePaper(false)};$("mUpd").onclick=function(){savePaper(true)};
 
@@ -508,16 +508,28 @@ $("mDoc").onclick=function(){toDoc(docTitle(ed.innerHTML),ed.innerHTML)};
 function paperHtml(p){return p.html||fromItems(p.title,p.items)}
 function cntOf(p){return p.html?(p.html.match(/<li/g)||[]).length:(p.items||[]).length}
 function renderRec(){
- $("recList").innerHTML=S.papers.length?S.papers.map(function(p){return '<div class="item"><div class="t"><b>'+esc(p.title)+'</b><div class="ans">'+esc(p.date)+"・"+cntOf(p)+" 題・建立者："+esc(p.by)+'</div></div><div class="acts"><button class="btn sm" data-ld="'+p.id+'">載入編輯</button><button class="btn ghost sm" data-pf="'+p.id+'">PDF</button><button class="btn ghost sm" data-dc="'+p.id+'">Word</button><button class="btn ghost sm" data-dl="'+p.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">還沒有紀錄。在「出題」頁按「存到出卷紀錄」就會出現在這裡。</div>';
+ $("recList").innerHTML=S.papers.length?S.papers.map(function(p){return '<div class="item"><div class="t"><b>'+esc(p.title)+'</b><div class="ans">'+esc(p.date)+"・"+cntOf(p)+" 題"+'</div></div><div class="acts"><button class="btn sm" data-ld="'+p.id+'">載入編輯</button><button class="btn ghost sm" data-pf="'+p.id+'">PDF</button><button class="btn ghost sm" data-dc="'+p.id+'">Word</button><button class="btn ghost sm" data-dl="'+p.id+'">刪除</button></div></div>'}).join(""):'<div class="empty-msg">還沒有紀錄。在「出題」頁按「存到出卷紀錄」就會出現在這裡。</div>';
  function find(id){return S.papers.filter(function(p){return p.id===id})[0]}
  $("recList").querySelectorAll("[data-ld]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.ld);ed.innerHTML=paperHtml(p);L.pid=p.id;sync();renderDraft();go("make")}});
  $("recList").querySelectorAll("[data-pf]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.pf);toPdf(p.title,paperHtml(p))}});
  $("recList").querySelectorAll("[data-dc]").forEach(function(b){b.onclick=function(){var p=find(b.dataset.dc);toDoc(p.title,paperHtml(p))}});
- $("recList").querySelectorAll("[data-dl]").forEach(function(b){b.onclick=function(){if(confirm("刪除這筆紀錄？所有人都會看不到。"))act(del("papers",b.dataset.dl).then(function(){return syncUse(b.dataset.dl,"","",{})}))}});
+ $("recList").querySelectorAll("[data-dl]").forEach(function(b){b.onclick=function(){if(confirm("刪除這筆紀錄？"))act(del("papers",b.dataset.dl))}});
 }
 
 /* ---------- 考古題總集 ---------- */
 var addImgs=[];
+function fmtChoice(t){
+ t=String(t||"").replace(/\r/g,"");
+ var re=/(^|[\s　])[\(（]?([A-EＡ-Ｅ])\s?[\.．、\)）]/g,ms=[],m;
+ while((m=re.exec(t))){var c=m[2].charCodeAt(0);ms.push({i:m.index+m[1].length,e:m.index+m[0].length,k:c>=0xFF21?c-0xFF21:c-65})}
+ var st=-1;for(var i=0;i<ms.length;i++){if(ms[i].k===0){st=i;break}}
+ if(st<0)return t;
+ var seq=[ms[st]];for(var j=st+1;j<ms.length;j++){if(ms[j].k===seq.length)seq.push(ms[j])}
+ if(seq.length<2)return t;
+ var stem=t.slice(0,seq[0].i).replace(/\s+$/,""),ol=seq.map(function(x,n){var end=n+1<seq.length?seq[n+1].i:t.length;return String.fromCharCode(65+n)+". "+t.slice(x.e,end).replace(/\s+/g," ").trim()});
+ return(stem?stem+"\n":"")+ol.join("   ");
+}
+function qtext(b){return/選擇/.test(b.t||"")?fmtChoice(b.q):b.q}
 function showAdd(v){$("addBox").style.display=v?"":"none";$("addToggle").textContent=v?"收起新增區":"＋ 新增考古題"}
 $("addToggle").onclick=function(){showAdd($("addBox").style.display==="none")};
 function uniq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i})}
@@ -537,16 +549,16 @@ function renderBank(){
  $("subs").innerHTML=cs.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
  $("types").innerHTML=ts.map(function(c){return '<option value="'+esc(c)+'">'}).join("");
  $("units").innerHTML=uniq(S.bank.map(function(b){return b.u})).map(function(c){return '<option value="'+esc(c)+'">'}).join("");
- var k=$("fK").value.trim();
+ var k=$("fK").value.trim(),UM=useMap();
  var l=S.bank.filter(function(b){return(!$("fY").value||String(b.y)===$("fY").value)&&(!$("fC").value||b.c===$("fC").value)&&(!$("fT").value||b.t===$("fT").value)&&(!$("fU").value||b.u===$("fU").value)&&(!k||(b.q+" "+(b.a||"")).indexOf(k)>-1)});
- if($("sortSel").value==="use")l=l.slice().sort(function(a,b){return(b.use||[]).length-(a.use||[]).length});
+ if($("sortSel").value==="use")l=l.slice().sort(function(a,b){return(UM[b.id]||[]).length-(UM[a.id]||[]).length});
  $("bN").textContent=l.length;$("bD").textContent=nLi();
  $("bList").innerHTML=l.length?l.map(function(b){
-  var u=b.use||[];
-  return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span>"+(b.u?'<span class="tag">'+esc(b.u)+"</span>":"")+'<span class="tag" style="border-color:var(--or2);color:var(--or2)">出過 '+u.length+" 次</span><div>"+esc(b.q)+"</div>"+(b.imgs||[]).map(function(x){return '<img class="qimg" src="'+x+'">'}).join("")+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+(u.length?'<div class="ans">出過的考卷：'+u.map(function(e){return esc(e.t)+"（"+esc(e.d)+"）"}).join("、")+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>';
+  var u=UM[b.id]||[];
+  return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span>"+(b.u?'<span class="tag">'+esc(b.u)+"</span>":"")+'<span class="tag" style="border-color:var(--or2);color:var(--or2)">出過 '+u.length+" 次</span><div>"+esc(qtext(b))+"</div>"+(b.imgs||[]).map(function(x){return '<img class="qimg" src="'+x+'">'}).join("")+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+(b.by&&b.by!=="本機"?'<div class="ans">新增者：'+esc(b.by)+"</div>":"")+(u.length?'<div class="ans">出過的考卷：'+u.map(function(e){return esc(e.t)+"（"+esc(e.d)+"）"}).join("、")+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>';
  }).join(""):'<div class="empty-msg">'+(S.bank.length?"沒有符合篩選的題目。":"題庫是空的，按右上方「＋ 新增考古題」新增第一題。")+"</div>";
  function find(id){return S.bank.filter(function(z){return z.id===id})[0]}
- $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);addToDoc(b.q,b.a||"",b.imgs,b.id);toast("已加入考卷")}});
+ $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);addToDoc(qtext(b),b.a||"",b.imgs,b.id);toast("已加入考卷")}});
  $("bList").querySelectorAll("[data-del]").forEach(function(x){x.onclick=function(){if(confirm("刪除這題？所有人都會看不到。"))act(del("bank",x.dataset.del))}});
  $("bList").querySelectorAll("[data-ed]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.ed);editId=b.id;mode(false);showAdd(true);$("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bU").value=b.u||"";$("bQ").value=b.q;$("bA").value=b.a||"";addImgs=(b.imgs||[]).slice();renderThumbs();$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0)}});
 }
@@ -564,7 +576,7 @@ $("bAdd").onclick=function(){
  var m=meta();if(!m)return;var q=$("bQ").value.trim();if(!q&&!addImgs.length){$("bQ").focus();return}
  if(addImgs.join("").length+q.length>900000){toast("圖片太大，超過雲端單題上限，請減少圖片");return}
  var old=editId?S.bank.filter(function(z){return z.id===editId})[0]:null;
- var o=Object.assign({},old||{id:uid()},{q:q,a:$("bA").value.trim(),imgs:addImgs.slice()},m);
+ var o=Object.assign({},old||{id:uid()},{q:/選擇/.test(m.t)?fmtChoice(q):q,a:$("bA").value.trim(),imgs:addImgs.slice()},m);
  var was=!!editId;
  act(putMany("bank",[o]).then(function(){resetEdit();toast(was?"已儲存修改":"已新增")}));
 };
@@ -579,7 +591,7 @@ $("bB").oninput=function(){var n=parseBatch(this.value).length;$("bCnt").textCon
 $("bBAdd").onclick=function(){
  var m=meta();if(!m)return;var l=parseBatch($("bB").value);if(!l.length){$("bB").focus();return}
  var base=Date.now();
- var arr=l.map(function(x,i){return Object.assign({id:uid()+i,ts:base-i,q:x.q,a:x.a},m)});
+ var arr=l.map(function(x,i){return Object.assign({id:uid()+i,ts:base-i,q:/選擇/.test(m.t)?fmtChoice(x.q):x.q,a:x.a},m)});
  act(putMany("bank",arr).then(function(){$("bB").value="";$("bCnt").textContent="";toast("已新增 "+arr.length+" 題")}));
 };
 
