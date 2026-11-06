@@ -79,8 +79,17 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .lhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}.lhead h2{margin:0}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.th{position:relative}.th img{height:70px;border-radius:6px;border:1px solid var(--line);background:#fff;display:block}
 .th button{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:0;background:var(--or);color:var(--dark);cursor:pointer;font-weight:700;line-height:1}
-img.qimg{max-height:150px;max-width:100%;border-radius:6px;margin-top:6px;display:block;background:#fff}
+img.qimg{float:right;max-width:3cm;max-height:3cm;width:auto;height:auto;margin:0 0 6px 12px;border-radius:4px;background:#fff}
+.item .t::after{content:"";display:block;clear:both}
 #doc img,#stage img{max-width:70%;height:auto}
+#doc li img,#stage li img{float:right;max-width:3cm;max-height:3cm;width:auto;height:auto;margin:0 0 4px 12px}
+#doc li::after,#stage li::after{content:"";display:block;clear:both}
+.lact{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:4px}
+#bList{max-height:calc(100vh - 330px);min-height:280px;overflow-y:auto;padding-right:6px}
+label.item{cursor:pointer;margin:0;color:var(--ink);font-size:inherit;display:flex}
+.item input[type=checkbox]{width:18px;height:18px;margin-top:5px;flex:none;accent-color:#ffb585}
+#bulk{position:fixed;inset:0;background:#241a3dee;display:none;align-items:center;justify-content:center;z-index:20}
+#bulk .card{width:440px;max-width:92vw;margin:0}
 @media(max-width:900px){
  .app{grid-template-columns:1fr}
  aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px}
@@ -193,6 +202,11 @@ img.qimg{max-height:150px;max-width:100%;border-radius:6px;margin-top:6px;displa
  <div class="card">
   <div class="lhead"><h2>題目清單（<span id="bN">0</span> 題・考卷已有 <span id="bD">0</span> 題）</h2>
    <div><label for="sortSel" style="display:inline;margin-right:6px">排序</label><select id="sortSel" style="width:auto"><option value="">預設（新增順序）</option><option value="use">出題次數（多→少）</option></select></div></div>
+  <div class="lact">
+   <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--ink)"><input type="checkbox" id="selAll" style="width:auto"> 全選</label>
+   <span class="ans" id="selN">已選 0 題</span>
+   <div class="bar" style="margin:0 0 0 auto"><button class="btn sm" id="bAddDoc">加入考卷</button><button class="btn ghost sm" id="bEdit">編輯</button><button class="btn ghost sm" id="bDel">刪除</button><button class="btn ghost sm" id="bFmt">整理選擇題格式</button></div>
+  </div>
   <div id="bList"></div>
  </div>
 </section>
@@ -207,6 +221,13 @@ img.qimg{max-height:150px;max-width:100%;border-radius:6px;margin-top:6px;displa
  <div class="bar" style="margin-top:4px"><button class="btn" id="liBtn" style="width:100%;padding:11px">使用 Google 帳號登入</button></div>
  <div class="bar"><button class="btn ghost" id="outBtn" style="width:100%">登出</button></div>
  <div class="bar"><button class="btn ghost" id="setClose" style="width:100%">關閉</button></div>
+</div></div>
+<div id="bulk"><div class="card">
+ <h3>批量修改（已選 <span id="bkN">0</span> 題）</h3>
+ <div class="hint">留空代表不更改，填了就會套用到所有已選題目。</div>
+ <div class="row"><div><label for="bkY">年份</label><input id="bkY" type="number"></div><div><label for="bkC">科目</label><input id="bkC" list="subs"></div></div>
+ <div class="row"><div><label for="bkT">題型</label><input id="bkT" list="types"></div><div><label for="bkU">單元</label><input id="bkU" list="units"></div></div>
+ <div class="bar"><button class="btn" id="bkOk">套用</button><button class="btn ghost" id="bkNo">取消</button></div>
 </div></div>
 <div id="toast"></div>
 
@@ -236,6 +257,10 @@ function loadL(){try{var o=JSON.parse(localStorage.getItem(LK)||"{}");if(o.L)L=O
 /* ---------- data layer ---------- */
 function ref(col,id){return C.F.doc.apply(null,[C.db].concat(col==="bank"?[col]:["users",user.uid,col],[id]))}
 function cref(col){return C.F.collection.apply(null,[C.db].concat(col==="bank"?[col]:["users",user.uid,col]))}
+async function delMany(col,ids){
+ if(C&&user){await Promise.all(ids.map(function(id){return C.F.deleteDoc(ref(col,id))}))}
+ else{S[col]=S[col].filter(function(x){return ids.indexOf(x.id)<0});saveL();renderAll()}
+}
 async function putMany(col,arr){
  arr.forEach(function(o){o.ts=o.ts||Date.now();o.by=o.by||who()});
  if(C&&user){await Promise.all(arr.map(function(o){return C.F.setDoc(ref(col,o.id),o)}))}
@@ -332,7 +357,7 @@ $("evAdd").onclick=function(){
 /* ---------- 出題（文件編輯器） ---------- */
 var ed=$("doc"),docInit=false,savedRange=null;
 var DEF='<h2 style="text-align:center">考卷標題</h2>';
-function liHtml(q,a,imgs,qid){return '<li data-ans="'+esc(a||"")+'"'+(qid?' data-qid="'+esc(qid)+'"':"")+">"+esc(q).replace(/\n/g,"<br>").replace(/ {2,}/g,function(m){return new Array(m.length+1).join("&nbsp;")})+(imgs||[]).map(function(u){return '<br><img src="'+u+'">'}).join("")+"</li>"}
+function liHtml(q,a,imgs,qid){return '<li data-ans="'+esc(a||"")+'"'+(qid?' data-qid="'+esc(qid)+'"':"")+">"+(imgs||[]).map(function(u){return '<img src="'+u+'">'}).join("")+esc(q).replace(/\n/g,"<br>").replace(/ {2,}/g,function(m){return new Array(m.length+1).join("&nbsp;")})+"</li>"}
 function fromItems(title,items){
  var h='<h2 style="text-align:center">'+esc(title||"考卷標題")+"</h2>";
  if(items&&items.length)h+="<ol>"+items.map(function(q){return liHtml(q.q,q.a)}).join("")+"</ol>";
@@ -345,11 +370,11 @@ function renderDraft(){
  if(!docInit){docInit=true;ed.innerHTML=L.html||fromItems(L.title,L.draft)}
  $("mCount").textContent=nLi();$("bD").textContent=nLi();$("mUpd").style.display=L.pid?"":"none";
 }
-function addToDoc(q,a,imgs,qid){
+function addToDoc(q,a,imgs,qid,quiet){
  var last=ed.lastElementChild,ol;
  if(last&&last.tagName==="OL")ol=last;
  else{ol=document.createElement("ol");ol.setAttribute("start",nLi()+1);ed.appendChild(ol)}
- ol.insertAdjacentHTML("beforeend",liHtml(q,a,imgs,qid));sync();
+ ol.insertAdjacentHTML("beforeend",liHtml(q,a,imgs,qid));if(!quiet)sync();
 }
 document.addEventListener("selectionchange",function(){var g=getSelection();if(g.rangeCount&&ed.contains(g.anchorNode))savedRange=g.getRangeAt(0).cloneRange()});
 function back(){ed.focus();if(savedRange){var g=getSelection();g.removeAllRanges();g.addRange(savedRange)}}
@@ -455,8 +480,14 @@ function jc(el){var a=(el.style&&el.style.textAlign)||el.getAttribute("align")||
 function wimg(img,ctx){
  var src=img.getAttribute("src"),d=ctx.dims[src];
  if(!d||src.indexOf("data:image/jpeg")!==0)return"";
- ctx.media.push(src);var id=ctx.media.length,w=Math.min(d.w,420),h=Math.round(w*d.h/d.w),cx=w*9525,cy=h*9525;
- return'<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+id+'" name="Picture '+id+'"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+id+'" name="image'+id+'.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId'+id+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+ ctx.media.push(src);var id=ctx.media.length,cx,cy;
+ if(ctx.li){var sc=Math.min(1,1080000/(Math.max(d.w,d.h)*9525));cx=Math.round(d.w*9525*sc);cy=Math.round(d.h*9525*sc)}
+ else{var w=Math.min(d.w,420);cx=w*9525;cy=Math.round(w*d.h/d.w)*9525}
+ var fr='<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr>',
+ g='<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+id+'" name="image'+id+'.jpeg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId'+id+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>',
+ ex='<wp:extent cx="'+cx+'" cy="'+cy+'"/>',dp='<wp:docPr id="'+id+'" name="Picture '+id+'"/>';
+ if(ctx.li)return'<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="114300" distR="0" simplePos="0" relativeHeight="'+id+'" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="0"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="margin"><wp:align>right</wp:align></wp:positionH><wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>'+ex+'<wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapSquare wrapText="bothSides"/>'+dp+fr+g+"</wp:anchor></w:drawing></w:r>";
+ return'<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">'+ex+dp+fr+g+"</wp:inline></w:drawing></w:r>";
 }
 function winl(n,o,ctx){
  var x="";
@@ -477,7 +508,7 @@ function wblk(n,o,ctx,out){
   var t=c.tagName;
   if(t==="OL"||t==="UL"){
    var b0=+c.getAttribute("start")||1,oc=stl(c,o);
-   Array.prototype.forEach.call(c.children,function(li,i){out.push(wpara(wrun(t==="OL"?(b0+i)+".":"•",o)+"<w:r><w:tab/></w:r>"+winl(li,stl(li,oc),ctx),jc(c),520))});
+   Array.prototype.forEach.call(c.children,function(li,i){ctx.li=1;var inn=winl(li,stl(li,oc),ctx);ctx.li=0;out.push(wpara(wrun(t==="OL"?(b0+i)+".":"•",o)+"<w:r><w:tab/></w:r>"+inn,jc(c),520))});
   }else if(/^(P|DIV|H[1-6])$/.test(t)&&c.querySelector("p,div,ol,ul,h1,h2,h3")){wblk(c,stl(c,o),ctx,out)}
   else out.push(wpara(winl(c,stl(c,o),ctx),jc(c)));
  });
@@ -517,19 +548,24 @@ function renderRec(){
 }
 
 /* ---------- 考古題總集 ---------- */
-var addImgs=[];
-function fmtChoice(t){
+var addImgs=[],picked={},curIds=[];
+function fmtChoice(t,ty){
  t=String(t||"").replace(/\r/g,"");
- var re=/(^|[\s　])[\(（]?([A-EＡ-Ｅ])\s?[\.．、\)）]/g,ms=[],m;
- while((m=re.exec(t))){var c=m[2].charCodeAt(0);ms.push({i:m.index+m[1].length,e:m.index+m[0].length,k:c>=0xFF21?c-0xFF21:c-65})}
+ var min=/選擇|單選|複選|多選/.test(ty||"")?2:3;
+ var re=/[\(（\[【［]?([A-EＡ-Ｅ])\s?[\.．、\)）\]】］:：]/g,ms=[],m;
+ while((m=re.exec(t))){
+  var c=m[1].charCodeAt(0),k=c>=0xFF21?c-0xFF21:c-65;
+  if(k===0&&/[A-Za-z0-9]/.test(t.charAt(m.index-1)))continue;
+  ms.push({i:m.index,e:m.index+m[0].length,k:k});
+ }
  var st=-1;for(var i=0;i<ms.length;i++){if(ms[i].k===0){st=i;break}}
  if(st<0)return t;
  var seq=[ms[st]];for(var j=st+1;j<ms.length;j++){if(ms[j].k===seq.length)seq.push(ms[j])}
- if(seq.length<2)return t;
+ if(seq.length<min)return t;
  var stem=t.slice(0,seq[0].i).replace(/\s+$/,""),ol=seq.map(function(x,n){var end=n+1<seq.length?seq[n+1].i:t.length;return String.fromCharCode(65+n)+". "+t.slice(x.e,end).replace(/\s+/g," ").trim()});
  return(stem?stem+"\n":"")+ol.join("   ");
 }
-function qtext(b){return/選擇/.test(b.t||"")?fmtChoice(b.q):b.q}
+function qtext(b){return fmtChoice(b.q,b.t)}
 function showAdd(v){$("addBox").style.display=v?"":"none";$("addToggle").textContent=v?"收起新增區":"＋ 新增考古題"}
 $("addToggle").onclick=function(){showAdd($("addBox").style.display==="none")};
 function uniq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i})}
@@ -553,20 +589,59 @@ function renderBank(){
  var l=S.bank.filter(function(b){return(!$("fY").value||String(b.y)===$("fY").value)&&(!$("fC").value||b.c===$("fC").value)&&(!$("fT").value||b.t===$("fT").value)&&(!$("fU").value||b.u===$("fU").value)&&(!k||(b.q+" "+(b.a||"")).indexOf(k)>-1)});
  if($("sortSel").value==="use")l=l.slice().sort(function(a,b){return(UM[b.id]||[]).length-(UM[a.id]||[]).length});
  $("bN").textContent=l.length;$("bD").textContent=nLi();
+ curIds=l.map(function(b){return b.id});
+ Object.keys(picked).forEach(function(id){if(!S.bank.some(function(b){return b.id===id}))delete picked[id]});
  $("bList").innerHTML=l.length?l.map(function(b){
   var u=UM[b.id]||[];
-  return '<div class="item"><div class="t"><span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span>"+(b.u?'<span class="tag">'+esc(b.u)+"</span>":"")+'<span class="tag" style="border-color:var(--or2);color:var(--or2)">出過 '+u.length+" 次</span><div>"+esc(qtext(b))+"</div>"+(b.imgs||[]).map(function(x){return '<img class="qimg" src="'+x+'">'}).join("")+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+(b.by&&b.by!=="本機"?'<div class="ans">新增者：'+esc(b.by)+"</div>":"")+(u.length?'<div class="ans">出過的考卷：'+u.map(function(e){return esc(e.t)+"（"+esc(e.d)+"）"}).join("、")+"</div>":"")+'</div><div class="acts"><button class="btn sm" data-use="'+b.id+'">加入考卷</button><button class="btn ghost sm" data-ed="'+b.id+'">編輯</button><button class="btn ghost sm" data-del="'+b.id+'">刪除</button></div></div>';
+  return '<label class="item"><input type="checkbox" data-pk="'+b.id+'"'+(picked[b.id]?" checked":"")+'><div class="t">'+(b.imgs||[]).map(function(x){return '<img class="qimg" src="'+x+'">'}).join("")+'<span class="tag">'+esc(b.y)+'</span><span class="tag">'+esc(b.c)+'</span><span class="tag">'+esc(b.t||"未分類")+"</span>"+(b.u?'<span class="tag">'+esc(b.u)+"</span>":"")+'<span class="tag" style="border-color:var(--or2);color:var(--or2)">出過 '+u.length+" 次</span><div>"+esc(qtext(b))+"</div>"+(b.a?'<div class="ans">答案：'+esc(b.a)+"</div>":"")+(b.by&&b.by!=="本機"?'<div class="ans">新增者：'+esc(b.by)+"</div>":"")+(u.length?'<div class="ans">出過的考卷：'+u.map(function(e){return esc(e.t)+"（"+esc(e.d)+"）"}).join("、")+"</div>":"")+"</div></label>";
  }).join(""):'<div class="empty-msg">'+(S.bank.length?"沒有符合篩選的題目。":"題庫是空的，按右上方「＋ 新增考古題」新增第一題。")+"</div>";
- function find(id){return S.bank.filter(function(z){return z.id===id})[0]}
- $("bList").querySelectorAll("[data-use]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.use);addToDoc(qtext(b),b.a||"",b.imgs,b.id);toast("已加入考卷")}});
- $("bList").querySelectorAll("[data-del]").forEach(function(x){x.onclick=function(){if(confirm("刪除這題？所有人都會看不到。"))act(del("bank",x.dataset.del))}});
- $("bList").querySelectorAll("[data-ed]").forEach(function(x){x.onclick=function(){var b=find(x.dataset.ed);editId=b.id;mode(false);showAdd(true);$("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bU").value=b.u||"";$("bQ").value=b.q;$("bA").value=b.a||"";addImgs=(b.imgs||[]).slice();renderThumbs();$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0)}});
+ $("bList").querySelectorAll("[data-pk]").forEach(function(x){x.onchange=function(){if(x.checked)picked[x.dataset.pk]=1;else delete picked[x.dataset.pk];selUi()}});
+ selUi();
 }
 ["fY","fC","fT","fU","sortSel"].forEach(function(i){$(i).onchange=renderBank});$("fK").oninput=renderBank;
 function mode(batch){$("oneBox").style.display=batch?"none":"";$("batBox").style.display=batch?"":"none";$("tS").className="btn sm"+(batch?" ghost":"");$("tB").className="btn sm"+(batch?"":" ghost")}
 $("tS").onclick=function(){mode(false)};$("tB").onclick=function(){if(editId)resetEdit();mode(true)};
 function resetEdit(){editId=null;addImgs=[];renderThumbs();$("addH").textContent="新增考古題";$("bAdd").textContent="新增題目";$("bCancel").style.display="none";$("bQ").value="";$("bA").value=""}
 $("bCancel").onclick=resetEdit;
+function selUi(){var n=Object.keys(picked).length;$("selN").textContent="已選 "+n+" 題";$("selAll").checked=!!curIds.length&&curIds.every(function(id){return picked[id]})}
+function bankById(id){return S.bank.filter(function(z){return z.id===id})[0]}
+function pickedIds(){
+ var ids=Object.keys(picked).filter(function(id){return bankById(id)});
+ ids.sort(function(a,b){var x=curIds.indexOf(a),y=curIds.indexOf(b);return(x<0?1e9:x)-(y<0?1e9:y)});
+ return ids;
+}
+function need(){var ids=pickedIds();if(!ids.length)toast("請先勾選題目");return ids}
+$("selAll").onchange=function(){var on=this.checked;curIds.forEach(function(id){if(on)picked[id]=1;else delete picked[id]});renderBank()};
+$("bAddDoc").onclick=function(){
+ var ids=need();if(!ids.length)return;
+ ids.forEach(function(id){var b=bankById(id);addToDoc(qtext(b),b.a||"",b.imgs,b.id,true)});
+ sync();picked={};renderBank();toast("已加入 "+ids.length+" 題到考卷");
+};
+$("bEdit").onclick=function(){
+ var ids=need();if(!ids.length)return;
+ if(ids.length>1){$("bkN").textContent=ids.length;["bkY","bkC","bkT","bkU"].forEach(function(i){$(i).value=""});$("bulk").style.display="flex";return}
+ var b=bankById(ids[0]);editId=b.id;mode(false);showAdd(true);
+ $("bY").value=b.y;$("bC").value=b.c;$("bT").value=b.t||"";$("bU").value=b.u||"";$("bQ").value=b.q;$("bA").value=b.a||"";
+ addImgs=(b.imgs||[]).slice();renderThumbs();$("addH").textContent="編輯題目";$("bAdd").textContent="儲存修改";$("bCancel").style.display="";window.scrollTo(0,0);
+};
+$("bkNo").onclick=function(){$("bulk").style.display="none"};
+$("bkOk").onclick=function(){
+ var ch={};["y","c","t","u"].forEach(function(k){var v=$("bk"+k.toUpperCase()).value.trim();if(v)ch[k]=v});
+ if(!Object.keys(ch).length){toast("沒有填任何要修改的欄位");return}
+ var arr=pickedIds().map(function(id){return Object.assign({},bankById(id),ch)});
+ $("bulk").style.display="none";
+ act(putMany("bank",arr).then(function(){toast("已修改 "+arr.length+" 題")}));
+};
+$("bDel").onclick=function(){
+ var ids=need();if(!ids.length)return;
+ if(confirm("刪除已選的 "+ids.length+" 題？所有人都會看不到。"))act(delMany("bank",ids).then(function(){picked={};renderBank()}));
+};
+$("bFmt").onclick=function(){
+ var arr=[];pickedIds().forEach(function(id){var b=bankById(id),q=fmtChoice(b.q,b.t);if(q!==b.q)arr.push(Object.assign({},b,{q:q}))});
+ if(!Object.keys(picked).length){toast("請先勾選題目");return}
+ if(!arr.length){toast("已選題目沒有需要整理的選擇題");return}
+ act(putMany("bank",arr).then(function(){toast("已整理 "+arr.length+" 題")}));
+};
 function meta(){
  var y=$("bY").value.trim(),c=$("bC").value.trim(),t=$("bT").value.trim();
  if(!y||!c||!t){toast("請先填年份、科目和題型");return null}
@@ -576,7 +651,7 @@ $("bAdd").onclick=function(){
  var m=meta();if(!m)return;var q=$("bQ").value.trim();if(!q&&!addImgs.length){$("bQ").focus();return}
  if(addImgs.join("").length+q.length>900000){toast("圖片太大，超過雲端單題上限，請減少圖片");return}
  var old=editId?S.bank.filter(function(z){return z.id===editId})[0]:null;
- var o=Object.assign({},old||{id:uid()},{q:/選擇/.test(m.t)?fmtChoice(q):q,a:$("bA").value.trim(),imgs:addImgs.slice()},m);
+ var o=Object.assign({},old||{id:uid()},{q:fmtChoice(q,m.t),a:$("bA").value.trim(),imgs:addImgs.slice()},m);
  var was=!!editId;
  act(putMany("bank",[o]).then(function(){resetEdit();toast(was?"已儲存修改":"已新增")}));
 };
@@ -591,7 +666,7 @@ $("bB").oninput=function(){var n=parseBatch(this.value).length;$("bCnt").textCon
 $("bBAdd").onclick=function(){
  var m=meta();if(!m)return;var l=parseBatch($("bB").value);if(!l.length){$("bB").focus();return}
  var base=Date.now();
- var arr=l.map(function(x,i){return Object.assign({id:uid()+i,ts:base-i,q:/選擇/.test(m.t)?fmtChoice(x.q):x.q,a:x.a},m)});
+ var arr=l.map(function(x,i){return Object.assign({id:uid()+i,ts:base-i,q:fmtChoice(x.q,m.t),a:x.a},m)});
  act(putMany("bank",arr).then(function(){$("bB").value="";$("bCnt").textContent="";toast("已新增 "+arr.length+" 題")}));
 };
 
